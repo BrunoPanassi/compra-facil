@@ -1,0 +1,22 @@
+[
+  { "id": 1, "name": "Cimento" },
+  { "id": 2, "name": "Areia e Pedra" },
+  { "id": 3, "name": "Blocos e Tijolos" },
+  { "id": 4, "name": "Argamassa e Rejunte" },
+  { "id": 5, "name": "Madeira" },
+  { "id": 6, "name": "Tinta" },
+  { "id": 7, "name": "Elétrica" },
+  { "id": 8, "name": "Hidráulica" },
+  { "id": 9, "name": "Ferragens" },
+  { "id": 10, "name": "Telhas e Cobertura" },
+  { "id": 11, "name": "Impermeabilizantes" },
+  { "id": 12, "name": "Ferramentas" },
+  { "id": 13, "name": "Portas e Janelas" },
+  { "id": 14, "name": "Pisos e Revestimentos" },
+  { "id": 15, "name": "Iluminação" },
+  { "id": 16, "name": "Tubos e Conexões" },
+  { "id": 17, "name": "Colas e Adesivos" },
+  { "id": 18, "name": "Forros e Drywall" },
+  { "id": 19, "name": "Louças Sanitárias" },
+  { "id": 20, "name": "Metais Sanitários" }
+]

@@ -1,0 +1,32 @@
+{
+  "name": "compra-facil-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "nuxt dev",
+    "build": "nuxt build",
+    "preview": "nuxt preview",
+    "lint": "eslint . --ext .js,.ts,.vue"
+  },
+  "dependencies": {
+    "@nuxt/fonts": "^0.11.4",
+    "@nuxt/types": "^2.18.1",
+    "@nuxt/typescript-build": "^3.0.2",
+    "@pinia/nuxt": "0.11.0",
+    "bcrypt": "^6.0.0",
+    "maska": "^3.1.1",
+    "nuxt": "^3.14.1592",
+    "pinia": "^3.0.2",
+    "vue": "latest",
+    "vue-router": "latest",
+    "vuetify-nuxt-module": "^0.18.3"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/bcrypt": "^5.0.2"
+  }
+}

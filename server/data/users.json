@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "nome": "Bruno - 123",
+    "telefone": "18997648833",
+    "senha": "$2b$10$b1Pw/XvK4BD7q7ZO2lTcIeLzcVICdqJTCahezG.SHFdDB24o1G8ZG",
+    "role": "CLIENT"
+  },
+  {
+    "id": 2,
+    "nome": "Valdemar - V@ldem4r",
+    "telefone": "90293019209",
+    "senha": "$2b$10$7U4BfZ.zbWD9UCcf0MyMaul5Kd8KGkrXuseAZqNxdDoT2qBYuITwq",
+    "role": "STORE_OWNER"
+  }
+]
