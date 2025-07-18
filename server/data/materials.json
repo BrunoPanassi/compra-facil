@@ -1,22 +1,142 @@
 [
-  { "id": 1, "name": "Cimento CP-II", "brand": "Votorantim", "weight": 50.0, "type_id": 1 },
-  { "id": 2, "name": "Areia Média Lavada", "brand": "Areias do Vale", "weight": 1000.0, "type_id": 2 },
-  { "id": 3, "name": "Pedrisco", "brand": "Pedreiras União", "weight": 800.0, "type_id": 2 },
-  { "id": 4, "name": "Bloco de Concreto 14x39x19", "brand": "Bloco Forte", "weight": 14.0, "type_id": 3 },
-  { "id": 5, "name": "Tijolo Baiano", "brand": "Cerâmica Brasil", "weight": 3.0, "type_id": 3 },
-  { "id": 6, "name": "Argamassa AC-I Interna", "brand": "Quartzolit", "weight": 20.0, "type_id": 4 },
-  { "id": 7, "name": "Rejunte Acrílico Branco", "brand": "Portokoll", "weight": 1.0, "type_id": 4 },
-  { "id": 8, "name": "Tábuas de Pinus 30cm", "brand": "Madeireira ABC", "weight": 12.0, "type_id": 5 },
-  { "id": 9, "name": "Compensado Naval 15mm", "brand": "Duraply", "weight": 30.0, "type_id": 5 },
-  { "id": 10, "name": "Tinta Acrílica Fosca", "brand": "Coral", "weight": 18.0, "type_id": 6 },
-  { "id": 11, "name": "Tinta Esmalte Brilhante", "brand": "Suvinil", "weight": 3.6, "type_id": 6 },
-  { "id": 12, "name": "Fio Flexível 2,5mm", "brand": "Sil", "weight": 1.2, "type_id": 7 },
-  { "id": 13, "name": "Quadro de Distribuição 12 Disjuntores", "brand": "Tigre", "weight": 3.5, "type_id": 7 },
-  { "id": 14, "name": "Tubo PVC 50mm", "brand": "Amanco", "weight": 2.3, "type_id": 8 },
-  { "id": 15, "name": "Joelho 90º 40mm", "brand": "Tigre", "weight": 0.5, "type_id": 8 },
-  { "id": 16, "name": "Vergalhão CA-50 10mm", "brand": "Gerdau", "weight": 12.0, "type_id": 9 },
-  { "id": 17, "name": "Telha Cerâmica Colonial", "brand": "Cerâmica São Pedro", "weight": 3.2, "type_id": 10 },
-  { "id": 18, "name": "Manta Asfáltica 3mm", "brand": "Vedacit", "weight": 40.0, "type_id": 11 },
-  { "id": 19, "name": "Martelete SDS Plus 800W", "brand": "Bosch", "weight": 5.0, "type_id": 12 },
-  { "id": 20, "name": "Porta de Madeira Lisa 210x80", "brand": "Portas Belém", "weight": 35.0, "type_id": 13 }
+  {
+    "id": 1,
+    "name": "Cimento CP-II",
+    "brand": "Votorantim",
+    "weight": 50,
+    "type_id": 1
+  },
+  {
+    "id": 2,
+    "name": "Areia Média Lavada",
+    "brand": "Areias do Vale",
+    "weight": 1000,
+    "type_id": 2
+  },
+  {
+    "id": 3,
+    "name": "Pedrisco",
+    "brand": "Pedreiras União",
+    "weight": 800,
+    "type_id": 2
+  },
+  {
+    "id": 4,
+    "name": "Bloco de Concreto 14x39x19",
+    "brand": "Bloco Forte",
+    "weight": 14,
+    "type_id": 3
+  },
+  {
+    "id": 5,
+    "name": "Tijolo Baiano",
+    "brand": "Cerâmica Brasil",
+    "weight": 3,
+    "type_id": 3
+  },
+  {
+    "id": 6,
+    "name": "Argamassa AC-I Interna",
+    "brand": "Quartzolit",
+    "weight": 20,
+    "type_id": 4
+  },
+  {
+    "id": 7,
+    "name": "Rejunte Acrílico Branco",
+    "brand": "Portokoll",
+    "weight": 1,
+    "type_id": 4
+  },
+  {
+    "id": 8,
+    "name": "Tábuas de Pinus 30cm",
+    "brand": "Madeireira ABC",
+    "weight": 12,
+    "type_id": 5
+  },
+  {
+    "id": 9,
+    "name": "Compensado Naval 15mm",
+    "brand": "Duraply",
+    "weight": 30,
+    "type_id": 5
+  },
+  {
+    "id": 10,
+    "name": "Tinta Acrílica Fosca",
+    "brand": "Coral",
+    "weight": 18,
+    "type_id": 6
+  },
+  {
+    "id": 11,
+    "name": "Tinta Esmalte Brilhante",
+    "brand": "Suvinil",
+    "weight": 3.6,
+    "type_id": 6
+  },
+  {
+    "id": 12,
+    "name": "Fio Flexível 2,5mm",
+    "brand": "Sil",
+    "weight": 1.2,
+    "type_id": 7
+  },
+  {
+    "id": 13,
+    "name": "Quadro de Distribuição 12 Disjuntores",
+    "brand": "Tigre",
+    "weight": 3.5,
+    "type_id": 7
+  },
+  {
+    "id": 14,
+    "name": "Tubo PVC 50mm",
+    "brand": "Amanco",
+    "weight": 2.3,
+    "type_id": 8
+  },
+  {
+    "id": 15,
+    "name": "Joelho 90º 40mm",
+    "brand": "Tigre",
+    "weight": 0.5,
+    "type_id": 8
+  },
+  {
+    "id": 16,
+    "name": "Vergalhão CA-50 10mm",
+    "brand": "Gerdau",
+    "weight": 12,
+    "type_id": 9
+  },
+  {
+    "id": 17,
+    "name": "Telha Cerâmica Colonial",
+    "brand": "Cerâmica São Pedro",
+    "weight": 3.2,
+    "type_id": 10
+  },
+  {
+    "id": 18,
+    "name": "Manta Asfáltica 3mm",
+    "brand": "Vedacit",
+    "weight": 40,
+    "type_id": 11
+  },
+  {
+    "id": 19,
+    "name": "Martelete SDS Plus 800W",
+    "brand": "Bosch",
+    "weight": 5,
+    "type_id": 12
+  },
+  {
+    "id": 20,
+    "name": "Porta de Madeira Lisa 210x80",
+    "brand": "Portas Belém",
+    "weight": 35,
+    "type_id": 13
+  }
 ]

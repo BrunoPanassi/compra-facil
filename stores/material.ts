@@ -1,21 +1,20 @@
-
-import type { MaterialType } from '~/types/MaterialType';
+import type { Material } from "~/types/Material";
 import { showErrorMessage } from '~/util/Util';
 
-const entityAPI = 'material-type'
-const label = 'Tipo de Material'
+const entity = 'material'
+const label = 'Material'
 
-export const useMaterialTypeStore = defineStore(entityAPI, {
+export const useMaterialtore = defineStore(entity, {
     state: () => ({
-        items: [] as Array<MaterialType>
+        items: [] as Array<Material>
     }),
     actions: {
         async fetch() {
-            const res = await $fetch<MaterialType[]>(`/api/${entityAPI}`);
+            const res = await $fetch<Material[]>(`/api/${entity}`);
             this.items = res;
         },
-        async add(item: MaterialType) {
-            const { data, error } = await useFetch<MaterialType>(`/api/${entityAPI}`, {
+        async add(item: Material) {
+            const { data, error } = await useFetch<Material>(`/api/${entity}`, {
                 method: 'POST',
                 body: item,
             });
@@ -24,10 +23,10 @@ export const useMaterialTypeStore = defineStore(entityAPI, {
                 const defaultMessage = `Falha ao cadastrar ${label}`
                 showErrorMessage(defaultMessage, data?.message)
             }
-            this.items.push(data.value as MaterialType);
+            this.items.push(data.value as Material);
         },
-        async update(item: MaterialType) {
-            const res = await $fetch<MaterialType>(`/api/${entityAPI}/${item.id}`, {
+        async update(item: Material) {
+            const res = await $fetch<Material>(`/api/${entity}/${item.id}`, {
                 method: 'PUT',
                 body: item,
             });
@@ -35,7 +34,7 @@ export const useMaterialTypeStore = defineStore(entityAPI, {
             if (index !== -1) this.items[index] = res;
         },
         async delete(id: number) {
-            await useFetch<MaterialType>(`/api/${entityAPI}/${id}`, {
+            await useFetch<Material>(`/api/${entity}/${id}`, {
                 method: 'DELETE'
             });
             this.items = this.items.filter(s => s.id !== id);

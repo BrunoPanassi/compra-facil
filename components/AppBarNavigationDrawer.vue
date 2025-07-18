@@ -48,11 +48,12 @@
             v-for="(item, index) in menuFilteredByUserRole"
             :key="index"
             :value="index"
+            @click="goTo(item.value)"
           >
             <template v-slot:prepend>
               <v-icon :icon="item.icon"></v-icon>
             </template>
-            <v-list-item-title v-text="item.title"></v-list-item-title>
+            <v-list-item-title v-text="item.title" ></v-list-item-title>
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
@@ -89,11 +90,11 @@ const menuItems = [
           title: 'Materiais',
           value: 'material',
           icon: 'mdi-tools',
-          role: [EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER]
+          role: [EnumRole.ADMIN, EnumRole.STORE_OWNER]
         },
         {
           title: 'Produtos',
-          value: 'product',
+          value: 'users',
           icon: 'mdi-package-variant-closed',
           role: [EnumRole.CLIENT, EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER, EnumRole.ADMIN]
         },
