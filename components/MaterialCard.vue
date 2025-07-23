@@ -39,10 +39,10 @@
 import { ref, onMounted } from 'vue';
 import { useMaterialTypeStore } from '@/stores/materialType';
 import type { Material } from '@/types/Material';
-import { useMaterialtore } from '~/stores/material';
+import { useMaterialStore } from '~/stores/material';
 import type { MaterialType } from '~/types/MaterialType';
 
-const materialStore = useMaterialtore();
+const materialStore = useMaterialStore();
 const materialTypeStore = useMaterialTypeStore();
 const register = ref(false);
 const editingId = ref<number | null>(null);

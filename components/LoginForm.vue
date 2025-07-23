@@ -114,6 +114,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import { EnumRole, type Role } from '~/types/Role';
 import { vMaska } from 'maska/vue';
+import { requiredRule, passwordRule } from '~/util/rule';
 
 const form = ref()
 const auth = useAuthStore();
@@ -128,10 +129,6 @@ const toRegister = ref(false);
 const seePassword = ref(false)
 
 const telefoneRawValue = computed(() => telefone.value.replace('(', '').replace(')', '').replaceAll(' ', ''))
-
-const regexPassword = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()[\]{}|\\;:'",.<>/?`~+=_-]).{6,}$/;
-const passwordRule = (value:string) => regexPassword.test(value) || 'A senha deve conter no mínimo 6 caracteres, incluindo uma letra maiúscula, um número e um caractere especial.';
-const requiredRule = (value:string) => !!value || 'Esse campo é obrigatório'
 const telefoneRule = () => (!!telefoneRawValue.value && telefoneRawValue.value.length == 11) || 'Telefone precisa conter 11 dígitos, incluindo o DDD'
 const senhaConfirmRule = (value:string) => (!!value && value == senha.value) || 'A senha confirmada não é a mesma informada.'
 

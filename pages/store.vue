@@ -13,6 +13,8 @@
         <v-card-subtitle></v-card-subtitle>
         <v-card-text>
           <StoreCard/>
+          <p class="mt-6"></p>
+          <ProductCard/>
         </v-card-text>
       </v-card>
       </template>

@@ -1,20 +1,20 @@
-import type { Material } from "~/types/Material";
+import type { Product } from "~/types/Product";
 import { showErrorMessage } from '~/util/Util';
 
-const entity = 'material'
-const label = 'Material'
+const entity = 'product'
+const label = 'Produto'
 
-export const useMaterialStore = defineStore(entity, {
+export const useProductStore = defineStore(entity, {
     state: () => ({
-        items: [] as Array<Material>
+        items: [] as Array<Product>
     }),
     actions: {
         async fetch() {
-            const res = await $fetch<Material[]>(`/api/${entity}`);
+            const res = await $fetch<Product[]>(`/api/${entity}`);
             this.items = res;
         },
-        async add(item: Material) {
-            const { data, error } = await useFetch<Material>(`/api/${entity}`, {
+        async add(item: Product) {
+            const { data, error } = await useFetch<Product>(`/api/${entity}`, {
                 method: 'POST',
                 body: item,
             });
@@ -23,10 +23,10 @@ export const useMaterialStore = defineStore(entity, {
                 const defaultMessage = `Falha ao cadastrar ${label}`
                 showErrorMessage(defaultMessage, data?.message)
             }
-            this.items.push(data.value as Material);
+            this.items.push(data.value as Product);
         },
-        async update(item: Material) {
-            const res = await $fetch<Material>(`/api/${entity}/${item.id}`, {
+        async update(item: Product) {
+            const res = await $fetch<Product>(`/api/${entity}/${item.id}`, {
                 method: 'PUT',
                 body: item,
             });
@@ -34,7 +34,7 @@ export const useMaterialStore = defineStore(entity, {
             if (index !== -1) this.items[index] = res;
         },
         async delete(id: number) {
-            await useFetch<Material>(`/api/${entity}/${id}`, {
+            await useFetch<Product>(`/api/${entity}/${id}`, {
                 method: 'DELETE'
             });
             this.items = this.items.filter(s => s.id !== id);
