@@ -1,18 +1,18 @@
 import type { Options, Response } from "~/types/Paginated";
-import type { Product } from "~/types/Product";
+import type { ProductStore } from "~/types/ProductStore";
 import { showErrorMessage } from '~/util/Util';
 
-const entity = 'product'
-const label = 'Produto'
+const entity = 'product-store'
+const label = 'Produto/Loja'
 
 export const useProductStore = defineStore(entity, {
     state: () => ({
-        items: [] as Array<Product>,
+        items: [] as Array<ProductStore>,
         total: 0 as number
     }),
     actions: {
         async fetch(options: Options) {
-            const { items, total } = await $fetch<Response<Product>>(`/api/${entity}`, {
+            const { items, total } = await $fetch<Response<ProductStore>>(`/api/${entity}`, {
                 query: {
                     prop: options.prop,
                     search: options.search,
@@ -26,8 +26,8 @@ export const useProductStore = defineStore(entity, {
                 total
             }
         },
-        async add(item: Product) {
-            const { data, error } = await useFetch<Product>(`/api/${entity}`, {
+        async add(item: ProductStore) {
+            const { data, error } = await useFetch<ProductStore>(`/api/${entity}`, {
                 method: 'POST',
                 body: item,
             });
@@ -36,10 +36,10 @@ export const useProductStore = defineStore(entity, {
                 const defaultMessage = `Falha ao cadastrar ${label}`
                 showErrorMessage(defaultMessage, data?.message)
             }
-            this.items.push(data.value as Product);
+            this.items.push(data.value as ProductStore);
         },
-        async update(item: Product) {
-            const res = await $fetch<Product>(`/api/${entity}/${item.id}`, {
+        async update(item: ProductStore) {
+            const res = await $fetch<ProductStore>(`/api/${entity}/${item.id}`, {
                 method: 'PUT',
                 body: item,
             });
@@ -47,15 +47,32 @@ export const useProductStore = defineStore(entity, {
             if (index !== -1) this.items[index] = res;
         },
         async delete(id: number) {
-            await useFetch<Product>(`/api/${entity}/${id}`, {
+            await useFetch<ProductStore>(`/api/${entity}/${id}`, {
                 method: 'DELETE'
             });
             this.items = this.items.filter(s => s.id !== id);
         }
     },
     getters: {
-        byName: (state) => {
-            return (name: string) => state.items.filter(p => p.name.includes(name))
+        productsByStore: (state) => {
+            return (id_store: number) => state.items
+                .filter(p => p.id_store == id_store)
+                .map(p => {
+                    return {
+                        id_product: p.id_product, 
+                        price: p.price
+                    }
+                })
+        },
+        storesByProduct: (state) => {
+            return (id_product: number) => state.items
+                .filter(p => p.id_product == id_product)
+                .map(p => {
+                    return {
+                        id_store: p.id_store,
+                        price: p.price
+                    }
+                })
         }
     }
 })

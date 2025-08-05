@@ -1,8 +1,9 @@
 export interface Product {
   id: number;
+  [key:string]: string|number|string[]|undefined;
   name: string;
-  brand: string;
-  price: string;
+  brand: string
+  desc?: string;
   quantity: number;
   material_id: number;
   images: string[]

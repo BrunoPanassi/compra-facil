@@ -22,6 +22,11 @@ export class JsonAdapter<T extends { id: number }> {
     return all.find(item => item.id === id);
   }
 
+  async getByIds(ids: number[]): Promise<T[]> {
+    const data = await this.getAll();
+    return data.filter(p => ids.includes(p.id))
+  }
+
   async add(item: T): Promise<void> {
     const all = await this.getAll();
     if (all.length) {

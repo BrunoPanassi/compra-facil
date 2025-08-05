@@ -1,15 +1,16 @@
 <template>
-  <v-container>
+  <div>
     <v-card>
       <v-card-title class="d-flex justify-space-between">
         <div>{{ title }}</div>
         <v-btn icon density="compact" elevation="4" class="ml-3" @click="toggleDialog">
           <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <DialogForm v-model="dialogValue" :title="`Cadastro de ${title}`">
-          <slot name="form" />
-        </DialogForm>
       </v-card-title>
+      
+      <DialogForm v-model="dialogValue" :title="`Cadastro de ${title}`">
+        <slot name="form" />
+      </DialogForm>
 
       <DeleteDialog
         v-model="deleteDialog"
@@ -17,8 +18,8 @@
         @cancel="cancelDelete"
         @confirm="confirmDelete"
       />
-
-      <v-data-table
+    </v-card>
+    <v-data-table
         :headers="headers"
         :items="items"
         item-value="id"
@@ -36,8 +37,7 @@
           </div>
         </template>
       </v-data-table>
-    </v-card>
-  </v-container>
+  </div>
 </template>
 
 <script setup lang="ts">

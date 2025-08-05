@@ -1,8 +1,8 @@
 import type { DataAdapter } from '~/types/Paginated';
 import { BaseRepository } from './BaseRepository';
-import type { Product } from '~/types/Product';
+import type { ProductStore } from '~/types/ProductStore';
 
-export class ProductRepository extends BaseRepository<Product> implements DataAdapter<Product>{
+export class ProductStoreRepository extends BaseRepository<ProductStore> implements DataAdapter<ProductStore>{
 
   constructor(useSql: boolean = false) {
     super('products', useSql)

@@ -4,11 +4,11 @@ import { SqlAdapter } from '@/server/adapters/SqlAdapter';
 export class BaseRepository<T extends { id: number }> {
     protected adapter: JsonAdapter<T> | SqlAdapter<T>;
     
-      constructor(entityName: string, useSql: boolean = false) {
-        this.adapter = useSql
-          ? new SqlAdapter<T>(entityName)
-          : new JsonAdapter<T>(entityName);
-      }
+    constructor(entityName: string, useSql: boolean = false) {
+    this.adapter = useSql
+        ? new SqlAdapter<T>(entityName)
+        : new JsonAdapter<T>(entityName);
+    }
 
     async getAll(): Promise<T[]> {
         return this.adapter.getAll();
@@ -28,5 +28,9 @@ export class BaseRepository<T extends { id: number }> {
 
     async delete(id: number): Promise<void> {
         await this.adapter.delete(id);
+    }
+
+    async getByIds(ids: number[]): Promise<T[]> {
+        return await this.adapter.getByIds(ids)
     }
 }

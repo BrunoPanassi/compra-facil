@@ -1,7 +1,7 @@
 import { defineEventHandler, readBody } from 'h3';
-import { ProductService } from '~/server/services/ProductService';
+import { ProductStoreService } from '~/server/services/ProductStoreService';
 
-const service = new ProductService();
+const service = new ProductStoreService
 
 export default defineEventHandler(async (event) => {
   const method = event.method;
@@ -12,10 +12,6 @@ export default defineEventHandler(async (event) => {
     const perPage = parseInt(query.perPage as string || '10');
     const search = (query.search as string) || '';
     const prop = (query.prop as string) || 'name';
-    const ids = (query.ids as number[] || [])
-    if (ids.length) {
-      return service.getByIds(ids)
-    }
     return await service.getPaginated({
       prop, search, page, perPage
     });

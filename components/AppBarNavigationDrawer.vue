@@ -87,16 +87,16 @@ const drawer = ref(false)
 
 const menuItems = [
         {
+          title: 'Pesquisar Produtos',
+          value: 'users',
+          icon: 'mdi-magnify',
+          role: [EnumRole.CLIENT, EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER, EnumRole.ADMIN]
+        },
+        {
           title: 'Materiais',
           value: 'material',
           icon: 'mdi-tools',
           role: [EnumRole.ADMIN, EnumRole.STORE_OWNER]
-        },
-        {
-          title: 'Produtos',
-          value: 'users',
-          icon: 'mdi-package-variant-closed',
-          role: [EnumRole.CLIENT, EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER, EnumRole.ADMIN]
         },
         {
           title: 'Orçamento',

@@ -1,4 +1,4 @@
-export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id: number) => Promise<T | undefined>; add: (entity: T) => Promise<void>; update: (id: number, entity: T) => Promise<void>; delete: (id: number) => Promise<void>; }> {
+export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id: number) => Promise<T | undefined>; add: (entity: T) => Promise<void>; update: (id: number, entity: T) => Promise<void>; delete: (id: number) => Promise<void>; getByIds: (id: number[]) => Promise<T[]>; }> {
     constructor(protected repository: R) {}
 
     async create(store: T): Promise<T> {
@@ -21,5 +21,9 @@ export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id
 
     async delete(id: number): Promise<void> {
         await this.repository.delete(id);
+    }
+
+    async getByIds(ids: number[]): Promise<T[]> {
+        return await this.repository.getByIds(ids);
     }
 }

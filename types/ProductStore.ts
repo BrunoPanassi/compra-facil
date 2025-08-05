@@ -1,10 +1,8 @@
-
-import { type Product } from './Product';
-import type { Store } from './Store';
-
 export interface ProductStore {
   id: number;
-  id_store: Store;
-  id_product: Product;
+  [key:string]: string|number;
+  id_store: number;
+  id_product: number;
+  price: string;
   // Qual produto cada loja contém
 }

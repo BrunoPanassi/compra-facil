@@ -22,4 +22,9 @@ export class SqlAdapter<T extends { id: number }> {
   async delete(id: number): Promise<void> {
     // Placeholder: substituir com DELETE FROM tableName WHERE id = ?
   }
+
+  async getByIds(ids: number[]): Promise<T[]> {
+    //
+    return []
+  }
 }
