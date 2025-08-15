@@ -7,6 +7,8 @@
           <v-icon>mdi-plus</v-icon>
         </v-btn>
       </v-card-title>
+
+      <slot name="must-select-before"/>
       
       <DialogForm v-model="dialogValue" :title="`Cadastro de ${title}`">
         <slot name="form" />

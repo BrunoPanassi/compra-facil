@@ -5,26 +5,59 @@ import { showErrorMessage } from '~/util/Util';
 const entity = 'product-store'
 const label = 'Produto/Loja'
 
-export const useProductStore = defineStore(entity, {
+export const useProductStoreStore = defineStore(entity, {
     state: () => ({
         items: [] as Array<ProductStore>,
         total: 0 as number
     }),
     actions: {
         async fetch(options: Options) {
-            const { items, total } = await $fetch<Response<ProductStore>>(`/api/${entity}`, {
-                query: {
-                    prop: options.prop,
-                    search: options.search,
-                    page: options.page,
-                    perPage: options.perPage
+            if (options.prop) {
+                const { items, total } = await $fetch<Response<ProductStore>>(`/api/${entity}`, {
+                    query: {
+                        prop: options.prop,
+                        search: options.search,
+                        page: options.page,
+                        perPage: options.perPage
+                    }
+                });
+                this.items = items
+                return {
+                    items,
+                    total
                 }
             }
-            );
-            return {
-                items,
-                total
+            if (options.id) {
+                const data = await $fetch<ProductStore[]>(`/api/${entity}`, {
+                        query: {
+                            id: options.id
+                        }
+                    });
+                this.items = data
+                return { items :data, total: 1}
             }
+            if (options.ids) {
+                const data = await $fetch<ProductStore[]>(`/api/${entity}`, {
+                        query: {
+                            ids: options.ids
+                        }
+                    });
+                this.items = data
+                return { items: data, total: data.length}
+            }
+            const data = await $fetch<ProductStore[]>(`/api/${entity}`)
+            this.items = data
+            return { items: data, total: data.length}
+        },
+        async byStore(storeId: number) {
+            const data = await $fetch<ProductStore[]>(`/api/${entity}/store`, {
+                query: {
+                    store_id: storeId
+                }
+            });
+            this.items = data
+            this.total = data.length
+            return { items: data, total: data.length}
         },
         async add(item: ProductStore) {
             const { data, error } = await useFetch<ProductStore>(`/api/${entity}`, {

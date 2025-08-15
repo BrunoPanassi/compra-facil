@@ -4,8 +4,7 @@ export interface Product {
   name: string;
   brand: string
   desc?: string;
-  quantity: number;
   material_id: number;
-  images: string[]
+  images: string[];
   // O produto só é produto quando o material possui quantidade disponível e preço
 }

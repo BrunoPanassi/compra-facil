@@ -12,9 +12,22 @@ export default defineEventHandler(async (event) => {
     const perPage = parseInt(query.perPage as string || '10');
     const search = (query.search as string) || '';
     const prop = (query.prop as string) || 'name';
-    return await service.getPaginated({
-      prop, search, page, perPage
-    });
+    if (page && perPage && search && prop) {
+      return await service.getPaginated({
+        prop, search, page, perPage
+      });
+    }
+
+    const ids = (query.ids as number[])
+    if (ids?.length) {
+      return await service.getByIds(ids)
+    }
+
+    const id = parseInt(query.id as string)
+    if (id) {
+      return await service.findById(id)
+    }
+    return await service.findAll()
   }
 
   if (method === 'POST') {

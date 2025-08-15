@@ -3,7 +3,7 @@
     <v-card>
       <v-card-title class="text-overline">Deletar</v-card-title>
       <v-card-text class="text-body-2">
-        <p>Deseja deletar o item <strong>{{ itemName }}</strong>?</p>
+        <p>{{ deleteText }}</p>
       </v-card-text>
       <v-card-actions>
         <v-btn color="grey" @click="$emit('cancel')">Não</v-btn>
@@ -23,6 +23,9 @@ const props = defineProps({
   },
 });
 
+const deleteText = computed(() => props.itemName 
+  ? `Deseja deletar o item ${props.itemName} ?` 
+  : 'Deseja delete esse item?')
 
 const emit = defineEmits(['cancel', 'confirm', 'update:modelValue'])
 

@@ -5,7 +5,7 @@ import type { ProductStore } from '~/types/ProductStore';
 export class ProductStoreRepository extends BaseRepository<ProductStore> implements DataAdapter<ProductStore>{
 
   constructor(useSql: boolean = false) {
-    super('products', useSql)
+    super('product-store', useSql)
   }
 
   async getPaginated({
@@ -25,5 +25,10 @@ export class ProductStoreRepository extends BaseRepository<ProductStore> impleme
       items: filtered.slice(offset, offset + perPage),
       total: filtered.length
     }
+  }
+
+  async getByStore(storeId: number) {
+    const data = await this.getAll()
+    return data.filter(productStore => productStore.id_store == storeId)
   }
 }

@@ -25,7 +25,7 @@
             <v-text-field v-model="form.name" label="Nome da Loja" required class="mb-3" />
             <v-text-field v-model="form.description" label="Descrição" required class="mb-3" />
 
-            <v-text-field v-model.number="form.zip" v-maska="'#####-###'" label="CEP" class="mb-3" @blur="fetchAddressByZip" />
+            <v-text-field v-model.number="form.zip" v-maska="'########'" label="CEP" class="mb-3" @blur="fetchAddressByZip" />
             <v-text-field v-model="form.street" label="Rua" class="mb-2" />
             <v-text-field v-model.number="form.nr" label="Número" class="mb-2" />
             <v-text-field v-model="form.neighbr" label="Bairro" class="mb-2" />

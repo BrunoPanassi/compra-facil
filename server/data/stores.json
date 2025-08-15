@@ -12,5 +12,19 @@
     "description": "Materiais para construção",
     "cellphone": "123",
     "email": "teste"
+  },
+  {
+    "id": 2,
+    "name": "Poliart",
+    "street": "Avenida Antônio Cavasana",
+    "nr": 345,
+    "neighbr": "Concórdia III",
+    "city": "Araçatuba",
+    "state": "SP",
+    "zip": 16013385,
+    "owner_id": 2,
+    "description": "",
+    "cellphone": 0,
+    "email": ""
   }
 ]

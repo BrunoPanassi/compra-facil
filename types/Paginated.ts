@@ -2,7 +2,9 @@ export interface Options {
     prop: string,
     search?: string,
     page?: number,
-    perPage?: number
+    perPage?: number,
+    id?: number,
+    ids?: number[]
 }
 
 export interface Response<T> {

@@ -10,9 +10,6 @@
     <template #form>
       <v-form @submit.prevent="handleSubmit">
         <v-text-field v-model="form.name" label="Nome" required class="mb-3" />
-        <v-text-field v-model="form.brand" label="Marca" required class="mb-3" />
-        <v-text-field v-model.number="form.weight" label="Peso (kg)" required class="mb-3" />
-
         <v-select
           v-model="form.type_id"
           :items="materialTypeStore.items"
@@ -50,8 +47,6 @@ const editingId = ref<number | null>(null);
 const form = ref<Material>({
   id: 0,
   name: '',
-  brand: '',
-  weight: 0,
   type_id: 1,
 });
 
@@ -96,7 +91,7 @@ function deleteMaterial(id: number) {
 }
 
 function resetForm() {
-  form.value = { id: 0, name: '', brand: '', weight: 0, type_id: 1 };
+  form.value = { id: 0, name: '', type_id: 1 };
   editingId.value = null;
   register.value = false;
 }

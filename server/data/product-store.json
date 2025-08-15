@@ -1,1 +1,16 @@
-[]
+[
+  {
+    "id": 1,
+    "id_store": 1,
+    "id_product": 1,
+    "price": "56.90",
+    "quantity": 100
+  },
+  {
+    "id": 2,
+    "id_store": 2,
+    "id_product": 1,
+    "price": "78.87",
+    "quantity": 150
+  }
+]

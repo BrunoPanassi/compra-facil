@@ -12,4 +12,8 @@ export class ProductStoreService extends BaseService<ProductStore, ProductStoreR
   async getPaginated(options: Options) {
     return await this.repository.getPaginated(options)
   }
+
+  async getByStore(storeId: number) {
+    return await this.repository.getByStore(storeId)
+  }
 }

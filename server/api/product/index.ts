@@ -8,17 +8,26 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'GET') {
     const query = getQuery(event);
-    const page = parseInt(query.page as string || '1');
-    const perPage = parseInt(query.perPage as string || '10');
-    const search = (query.search as string) || '';
-    const prop = (query.prop as string) || 'name';
-    const ids = (query.ids as number[] || [])
-    if (ids.length) {
-      return service.getByIds(ids)
+    const page = parseInt(query.page as string);
+    const perPage = parseInt(query.perPage as string);
+    const search = (query.search as string);
+    const prop = (query.prop as string || '');
+    if (prop) {
+      return await service.getPaginated({
+        prop, search, page, perPage
+      });
     }
-    return await service.getPaginated({
-      prop, search, page, perPage
-    });
+
+    const ids = (query.ids as number[])
+    if (ids?.length) {
+      return await service.getByIds(ids)
+    }
+
+    const id = parseInt(query.id as string)
+    if (id) {
+      return await service.findById(id)
+    }
+    return await service.findAll()
   }
 
   if (method === 'POST') {

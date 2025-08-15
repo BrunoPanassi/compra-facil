@@ -11,6 +11,7 @@
     clearable
     label="Nome"
     variant="solo-filled"
+    :disabled="disabled"
     @update:search="onSearch"
     @update:model-value="onSelect"
     @click:clear="onClear"
@@ -28,13 +29,27 @@
 
 <script setup lang="ts">
 import { debounce } from 'lodash-es';
-import type { Product } from '@/types/Product'; // você deve ter uma interface Product
+import type { Product } from '@/types/Product';
 
 const store = useProductStore()
 const selectedProduct = ref<Product|null>();
 const searchText = ref<string>();
 const loading = ref(false);
 const productItems = ref<Product[]>();
+
+interface Props {
+  disabled: boolean,
+  product?: Product
+}
+
+const props = defineProps<Props>()
+
+const disabled = toRef(() => props.disabled);
+const product = toRef(() => props.product)
+
+onMounted(() => {
+  if (product.value) selectedProduct.value = product.value
+})
 
 let page = 1; // TODO por enquanto 1, mas podemos implementar scroll infinito depois
 let perPage = 10

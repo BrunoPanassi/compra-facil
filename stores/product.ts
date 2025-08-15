@@ -12,31 +12,55 @@ export const useProductStore = defineStore(entity, {
     }),
     actions: {
         async fetch(options: Options) {
-            const { items, total } = await $fetch<Response<Product>>(`/api/${entity}`, {
-                query: {
-                    prop: options.prop,
-                    search: options.search,
-                    page: options.page,
-                    perPage: options.perPage
+            if (options.prop) {
+                const { items, total } = await $fetch<Response<Product>>(`/api/${entity}`, {
+                    query: {
+                        prop: options.prop,
+                        search: options.search,
+                        page: options.page,
+                        perPage: options.perPage
+                    }
+                });
+                return {
+                    items,
+                    total
                 }
             }
-            );
-            return {
-                items,
-                total
+            if (options.id) {
+                const data = await $fetch<Product[]>(`/api/${entity}`, {
+                        query: {
+                            id: options.id
+                        }
+                    });
+                return { items :data, total: 1}
             }
+            if (options.ids) {
+                const data = await $fetch<Product[]>(`/api/${entity}`, {
+                        query: {
+                            ids: options.ids
+                        }
+                    });
+                return { items: data, total: data.length}
+            }
+            const data = await $fetch<Product[]>(`/api/${entity}`)
+            return { items: data, total: data.length}
         },
         async add(item: Product) {
-            const { data, error } = await useFetch<Product>(`/api/${entity}`, {
-                method: 'POST',
-                body: item,
-            });
-            if (error.value) {
-                const data = error.value.data
+            try {
+                const { data, error } = await useFetch<Product>(`/api/${entity}`, {
+                    method: 'POST',
+                    body: item,
+                });
+                if (error.value) {
+                    throw new Error(error.value.message)
+                } else {
+                    this.items.push(data.value as Product);
+                }
+                return data.value
+            } catch (e: any) {
                 const defaultMessage = `Falha ao cadastrar ${label}`
-                showErrorMessage(defaultMessage, data?.message)
+                showErrorMessage(defaultMessage, e)
             }
-            this.items.push(data.value as Product);
         },
         async update(item: Product) {
             const res = await $fetch<Product>(`/api/${entity}/${item.id}`, {
