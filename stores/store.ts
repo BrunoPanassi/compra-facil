@@ -12,6 +12,7 @@ export const useStoreStore = defineStore(entity, {
         async fetch() {
             const res = await $fetch<Store[]>(`/api/${entity}`);
             this.items = res;
+            return res;
         },
         async add(item: Store) {
             const { data, error } = await useFetch<Store>(`/api/${entity}`, {

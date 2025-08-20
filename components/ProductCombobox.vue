@@ -9,6 +9,8 @@
     item-title="name"
     return-object
     clearable
+    :multiple="multiple"
+    :chips="multiple"
     label="Nome"
     variant="solo-filled"
     :disabled="disabled"
@@ -32,14 +34,15 @@ import { debounce } from 'lodash-es';
 import type { Product } from '@/types/Product';
 
 const store = useProductStore()
-const selectedProduct = ref<Product|null>();
+const selectedProduct = ref<Product|Product[]>();
 const searchText = ref<string>();
 const loading = ref(false);
 const productItems = ref<Product[]>();
 
 interface Props {
   disabled: boolean,
-  product?: Product
+  multiple: boolean,
+  product?: Product,
 }
 
 const props = defineProps<Props>()
@@ -85,7 +88,7 @@ function onSearch(val: string) {
 
 function onClear() {
     searchText.value = ''
-    selectedProduct.value = null
+    selectedProduct.value = undefined
     productItems.value = []
     emit('onClear')
 }

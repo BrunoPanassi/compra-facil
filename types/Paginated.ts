@@ -4,7 +4,7 @@ export interface Options {
     page?: number,
     perPage?: number,
     id?: number,
-    ids?: number[]
+    ids?: number[] | string
 }
 
 export interface Response<T> {
