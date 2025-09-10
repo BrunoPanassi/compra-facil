@@ -7,6 +7,8 @@ export interface Store {
   city: string;
   state: string;
   zip: number;
+  lat: number,
+  lon: number,
   owner_id: number;
   description: string;
   cellphone: number;

@@ -11,7 +11,7 @@
     clearable
     :multiple="multiple"
     :chips="multiple"
-    label="Nome"
+    label="Produtos"
     variant="solo-filled"
     :disabled="disabled"
     @update:search="onSearch"

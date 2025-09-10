@@ -7,12 +7,3 @@ export interface Address {
   state: string;
   zip: number;
 }
-
-export function compare(from: Address, to:Address) {
-  return from.state == to.state
-    && from.city == to.city
-    && from.neighbr == to.neighbr
-    && from.street == to.street
-    && from.nr == to.nr
-    && from.zip == to.zip
-}

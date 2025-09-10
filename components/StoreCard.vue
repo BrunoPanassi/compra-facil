@@ -24,7 +24,13 @@
           <template #card-text>
             <v-text-field v-model="form.name" label="Nome da Loja" required class="mb-3" />
             <v-text-field v-model="form.description" label="Descrição" required class="mb-3" />
-
+            <v-expansion-panels v-model="panel">
+              <v-expansion-panel title="Destino">
+                <v-expansion-panel-text>
+                  <AddressPicker @select="onDestinationSelect" />
+                </v-expansion-panel-text>
+              </v-expansion-panel>
+            </v-expansion-panels>
             <v-text-field v-model.number="form.zip" v-maska="'########'" label="CEP" class="mb-3" @blur="fetchAddressByZip" />
             <v-text-field v-model="form.street" label="Rua" class="mb-2" />
             <v-text-field v-model.number="form.nr" label="Número" class="mb-2" />
@@ -92,6 +98,14 @@ import { vMaska } from 'maska/vue';
 import type { ViaCepResponse } from '~/types/ViaCEPResponse';
 import ConfirmDialog from './ConfirmDialog.vue';
 
+const panel = ref([0])
+
+function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
+  form.value.lat = coords.lat
+  form.value.lon = coords.lon
+  console.log("Destino selecionado:", coords);
+}
+
 const store = useStoreStore();
 const authStore = useAuthStore()
 const editingId = ref<number | null>(null);
@@ -109,6 +123,8 @@ const form = ref<Store>({
   city: '',
   state: '',
   zip: 0,
+  lat: 0,
+  lon: 0,
   owner_id: 0,
   description: '',
   cellphone: 0,
@@ -193,6 +209,8 @@ function resetForm() {
     city: '',
     state: '',
     zip: 0,
+    lat: 0,
+    lon: 0,
     owner_id: 0,
     description: '',
     cellphone: 0,

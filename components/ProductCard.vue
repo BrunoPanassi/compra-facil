@@ -203,7 +203,6 @@ async function onStoreSelect() {
     if (items.length) {
 
       const productIds = items.map(prodStore => prodStore.id_product)
-      console.log("productIds: ", productIds.join(','))
       const products = await productStore.fetch({
         prop: '',
         ids: productIds.join(',')

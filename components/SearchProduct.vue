@@ -1,5 +1,5 @@
 <template>
-  <v-card class="p-4">
+  <v-card class="p-4 background-primary">
     <ProductCombobox 
       :disabled="false"
       :multiple="true"
@@ -7,43 +7,103 @@
       @on-clear="onProductClear"
     />
 
-    <!-- CEP destino -->
-    <v-text-field
-      v-model="destinationZip"
-      label="CEP de entrega"
-      placeholder="Digite o CEP"
-      class="mb-4"
-    />
+    <v-expansion-panels v-model="panel">
+      <v-expansion-panel title="Destino">
+        <v-expansion-panel-text>
+          <AddressPicker @select="onDestinationSelect" />
+        </v-expansion-panel-text>
+      </v-expansion-panel>
+    </v-expansion-panels>
 
-    <v-btn color="primary" @click="calculateBestStores">
-      Calcular Melhor Opção
+    <v-card>
+      <p class="ml-6 mt-2">Priorizar por:</p>
+      <v-card-text>
+        <v-btn-toggle
+          class="d-flex justify-center"
+          color="#2d6a4f"
+          v-model="priorize"
+          border
+          mandatory
+        >
+          <v-btn prepend-icon="mdi-currency-usd" value="price">
+            Preço
+          </v-btn>
+          <v-btn prepend-icon="mdi-map-marker-distance" value="distance">
+            Distancia
+          </v-btn>
+        </v-btn-toggle>
+      </v-card-text>
+    </v-card>
+
+    <v-btn 
+      type="submit" 
+      color="#2d6a4f"
+      rounded
+      block
+      class="mt-4"
+      @click="calculateBestStores"
+    >
+      Buscar
     </v-btn>
 
     <!-- Resultado -->
-    <div v-if="bestStores.length" class="mt-6">
-      <h3 class="text-md font-bold mb-2">Top 3 Lojas</h3>
+    <v-card v-if="bestStores.length" class="mt-6">
+      <v-card-title class="text-md text-center font-bold mb-2">Melhores Lojas</v-card-title>
 
-      <div v-for="(store, index) in bestStores" :key="store.id" class="mb-4 p-2 border rounded">
-        <h4 class="font-semibold">#{{ index + 1 }} - {{ store.store.name }}</h4>
-        <p><strong>Preço total:</strong> R$ {{ store.totalPrice.toFixed(2) }}</p>
-        <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
-        <p><strong>Produtos encontrados:</strong></p>
-        <ul>
-          <li v-for="p in store.foundProducts" :key="p.id">{{ p.name }}</li>
-        </ul>
-        <p v-if="store.missingProducts.length"><strong>Produtos não encontrados:</strong></p>
-        <ul v-if="store.missingProducts.length">
-          <li v-for="p in store.missingProducts" :key="p.id">{{ p.name }}</li>
-        </ul>
-      </div>
-    </div>
+      <v-card-text>
+        <div v-for="(store, index) in bestStores" :key="store.id" class="mb-4 p-2 border rounded">
+          <h4 class="font-semibold">#{{ index + 1 }} - {{ store.store.name }}</h4>
+          <p><strong>Preço total:</strong> R$ {{ store.totalPrice.toFixed(2) }}</p>
+          <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
+          <p><strong>Produtos encontrados:</strong></p>
+          <ul class="ml-4">
+            <li v-for="p in store.foundProducts" :key="p.id">
+              {{ p.name }}
+              <br>
+              <strong>R$ </strong>{{ p.price }}
+            </li>
+          </ul>
+          <p v-if="store.missingProducts.length"><strong>Produtos não encontrados:</strong></p>
+          <ul v-if="store.missingProducts.length">
+            <li v-for="p in store.missingProducts" :key="p.id">{{ p.name }}</li>
+          </ul>
+          <v-btn
+            append-icon="mdi-arrow-right-thick"
+            color="#40916c"
+            class="mt-2"
+            block
+            @click="goToBudgetPage(store.foundProducts, store.store)"
+          >
+            Seguir
+          </v-btn>
+        </div>
+      </v-card-text>
+    </v-card>
   </v-card>
 </template>
 
 <script setup lang="ts">
+import AddressPicker from "@/components/AddressPicker.vue";
 import type { Product } from '~/types/Product';
 import { ref } from "vue"
 import { haversineDistance } from '~/util/geoUtils';
+import type { ProductStore } from "~/types/ProductStore";
+import { useBudgetStore } from "~/stores/budget";
+import type { Store } from "~/types/Store";
+
+const router = useRouter();
+const panel = ref([0])
+
+const budgetStore = useBudgetStore()
+
+const destinationCoords = ref<{ lat: number; lon: number; display_name: string } | null>(null);
+
+const priorize = ref<string>("price");
+
+function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
+  destinationCoords.value = coords;
+  console.log("Destino selecionado:", coords);
+}
 
 const selectedProducts = ref<Product[]>();
 function onProductSelect(product: Product[]) {
@@ -57,55 +117,37 @@ function onProductClear() {
 const storeStore = useStoreStore()
 const productStoreStore = useProductStoreStore()
 
-const destinationZip = ref("")
 const bestStores = ref<any[]>([])
-
-// Obter coordenadas via Nominatim (OpenStreetMap)
-async function getCoordinatesByZip(zip: string) {
-  const url = `https://nominatim.openstreetmap.org/search?postalcode=${zip}&country=Brazil&format=json`
-  const res = await fetch(url, { headers: { "User-Agent": "compra-facil-app" } })
-  const data = await res.json()
-  if (data.length > 0) {
-    return { lat: parseFloat(data[0].lat), lon: parseFloat(data[0].lon) }
-  }
-  return null
-}
 
 async function calculateBestStores() {
   const stores = await storeStore.fetch()
-  const productsStore = await productStoreStore.fetch({
-    prop: ''
-  })
+  const productsStore = await productStoreStore.fetch({ prop: '' })
 
-  const destinationCoords = await getCoordinatesByZip(destinationZip.value)
-  if (!destinationCoords) {
-    alert("CEP do destino inválido.")
-    return
-  }
-
-  if (!selectedProducts.value) {
+  if (!selectedProducts.value || selectedProducts.value.length === 0) {
     alert("Selecione pelo menos um produto")
     return
   }
 
-  const results:any[] = []
+  if (!destinationCoords.value) {
+    alert("Selecione um destino")
+    return
+  }
+
+  const results: any[] = []
 
   for (const store of stores) {
-    const storeCoords = await getCoordinatesByZip(store.zip.toString())
-    if (!storeCoords) continue
-
     let totalPrice = 0
-    const foundProducts:any[] = []
-    const missingProducts:any[] = []
+    const foundProducts: any[] = []
+    const missingProducts: any[] = []
 
     for (const product of selectedProducts.value) {
       const ps = productsStore.items.find(
-        (ps: any) => ps.store_id === store.id && ps.product_id === product.id
+        (ps: ProductStore) => ps.id_store === store.id && ps.id_product === product.id
       )
 
       if (ps) {
         totalPrice += parseFloat(ps.price)
-        foundProducts.push(product)
+        foundProducts.push({...product, ...ps})
       } else {
         missingProducts.push(product)
       }
@@ -113,27 +155,53 @@ async function calculateBestStores() {
 
     // Distância
     const distance = haversineDistance(
-      destinationCoords.lat,
-      destinationCoords.lon,
-      storeCoords.lat,
-      storeCoords.lon
+      destinationCoords.value.lat,
+      destinationCoords.value.lon,
+      store.lat,
+      store.lon
     )
 
     results.push({ store, totalPrice, distance, foundProducts, missingProducts })
   }
 
-  // Normalizar preço e distância para calcular score
-  const maxPrice = Math.max(...results.map(r => r.totalPrice))
-  const maxDist = Math.max(...results.map(r => r.distance))
+  // 🔹 Verifica cobertura de produtos (quantos cada loja possui)
+  const maxCoverage = Math.max(...results.map(r => r.foundProducts.length))
 
-  results.forEach(r => {
-    const priceNorm = r.totalPrice / maxPrice
-    const distNorm = r.distance / maxDist
-    r.score = priceNorm * 0.6 + distNorm * 0.4
+  // 🔹 Fallback: considera apenas lojas com maior cobertura
+  const candidateStores = results.filter(r => r.foundProducts.length === maxCoverage && r.foundProducts.length > 0)
+
+  if (candidateStores.length === 0) {
+    bestStores.value = []
+    return
+  }
+
+  // Normalizar preço e distância para calcular score
+  const maxPrice = Math.max(...candidateStores.map(r => r.totalPrice))
+  const maxDist = Math.max(...candidateStores.map(r => r.distance))
+
+  const priceRate = priorize.value == "price" ? 0.6 : 0.4
+  const distRate = priorize.value == "distance" ? 0.6 : 0.4
+
+  candidateStores.forEach(r => {
+    const priceNorm = maxPrice > 0 ? r.totalPrice / maxPrice : 0
+    const distNorm = maxDist > 0 ? r.distance / maxDist : 0
+    r.score = priceNorm * priceRate + distNorm * distRate
   })
 
-  bestStores.value = results.sort((a, b) => a.score - b.score).slice(0, 3)
+  bestStores.value = candidateStores.sort((a, b) => a.score - b.score).slice(0, 3)
+}
+
+function goToBudgetPage(prodStore: Array<ProductStore>, store: Store) {
+  budgetStore.add(prodStore, store)
+  router.push('/budget')
 }
 
 
+
 </script>
+
+<style>
+.background-primary {
+  background-color: #D8F3DC;
+}
+</style>
