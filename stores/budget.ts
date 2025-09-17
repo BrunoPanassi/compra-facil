@@ -1,13 +1,13 @@
-import type { ProductStore } from "~/types/ProductStore";
+import type { ProdutStoreProductDetail } from "~/types/ProductStore";
 import type { Store } from "~/types/Store";
 
 export const useBudgetStore = defineStore('budget', {
     state: () => ({
-        prodStore: [] as Array<ProductStore>,
+        prodStore: [] as Array<ProdutStoreProductDetail>,
         store: {} as Store
     }),
     actions: {
-        async add(prodStore: Array<ProductStore>, store: Store) {
+        async add(prodStore: Array<ProdutStoreProductDetail>, store: Store) {
             this.prodStore = prodStore
             this.store = store
         },

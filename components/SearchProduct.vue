@@ -51,13 +51,13 @@
       <v-card-title class="text-md text-center font-bold mb-2">Melhores Lojas</v-card-title>
 
       <v-card-text>
-        <div v-for="(store, index) in bestStores" :key="store.id" class="mb-4 p-2 border rounded">
+        <div v-for="(store, index) in bestStores" :key="store.store.id" class="mb-4 p-2 border rounded">
           <h4 class="font-semibold">#{{ index + 1 }} - {{ store.store.name }}</h4>
           <p><strong>Preço total:</strong> R$ {{ store.totalPrice.toFixed(2) }}</p>
           <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
           <p><strong>Produtos encontrados:</strong></p>
           <ul class="ml-4">
-            <li v-for="p in store.foundProducts" :key="p.id">
+            <li v-for="p in store.foundProducts" :key="p.id_store">
               {{ p.name }}
               <br>
               <strong>R$ </strong>{{ p.price }}
@@ -87,7 +87,7 @@ import AddressPicker from "@/components/AddressPicker.vue";
 import type { Product } from '~/types/Product';
 import { ref } from "vue"
 import { haversineDistance } from '~/util/geoUtils';
-import type { ProductStore } from "~/types/ProductStore";
+import type { ProductStore, ProdutStoreProductDetail, BestStoreResult } from "~/types/ProductStore";
 import { useBudgetStore } from "~/stores/budget";
 import type { Store } from "~/types/Store";
 
@@ -117,7 +117,7 @@ function onProductClear() {
 const storeStore = useStoreStore()
 const productStoreStore = useProductStoreStore()
 
-const bestStores = ref<any[]>([])
+const bestStores = ref<BestStoreResult[]>([])
 
 async function calculateBestStores() {
   const stores = await storeStore.fetch()
@@ -133,12 +133,12 @@ async function calculateBestStores() {
     return
   }
 
-  const results: any[] = []
+  const results: BestStoreResult[] = []
 
   for (const store of stores) {
     let totalPrice = 0
-    const foundProducts: any[] = []
-    const missingProducts: any[] = []
+    const foundProducts: ProdutStoreProductDetail[] = []
+    const missingProducts: Product[] = []
 
     for (const product of selectedProducts.value) {
       const ps = productsStore.items.find(
@@ -161,7 +161,7 @@ async function calculateBestStores() {
       store.lon
     )
 
-    results.push({ store, totalPrice, distance, foundProducts, missingProducts })
+    results.push({ store, totalPrice, distance, foundProducts, missingProducts, score: 0 })
   }
 
   // 🔹 Verifica cobertura de produtos (quantos cada loja possui)
@@ -191,7 +191,7 @@ async function calculateBestStores() {
   bestStores.value = candidateStores.sort((a, b) => a.score - b.score).slice(0, 3)
 }
 
-function goToBudgetPage(prodStore: Array<ProductStore>, store: Store) {
+function goToBudgetPage(prodStore: Array<ProdutStoreProductDetail>, store: Store) {
   budgetStore.add(prodStore, store)
   router.push('/budget')
 }
