@@ -19,25 +19,14 @@
     </ul>
 
     <!-- Mapa Leaflet com marcação dos coords selecionados -->
-    <LMap
-      v-if="selectedCoords"
-      :center="[selectedCoords.lat, selectedCoords.lon]"
-      :zoom="14"
-      style="height: 300px; margin-top: 12px"
-      :use-global-leaflet="false"
-    >
-      <LTileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="&copy; OpenStreetMap contributors"
-      />
-      <LMarker :lat-lng="[selectedCoords.lat, selectedCoords.lon]" />
-    </LMap>
+    <MapUI :selected-coords="selectedCoords"/>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { type NominatimResponse} from 'nominatim-browser';
+import { SearchAddress } from '~/server/services/SearchAddress';
 
 const emit = defineEmits<{
   (e: 'select', coords: { lat: number; lon: number; display_name: string }): void;
@@ -45,9 +34,15 @@ const emit = defineEmits<{
 
 const query = ref('');
 const results = ref<NominatimResponse[]>([]);
-const selectedCoords = ref<{ lat: number; lon: number; display_name: string } | null>(null);
+const selectedCoords = ref<{ lat: number; lon: number; display_name: string }>({
+  lat: 0,
+  lon: 0,
+  display_name: ''
+});
 
 let controller: AbortController | null = null;
+
+const searchAddress = new SearchAddress();
 
 async function onInput() {
   if (!query.value || query.value.length < 3) {
@@ -59,8 +54,9 @@ async function onInput() {
   controller?.abort();
   controller = new AbortController();
 
-  const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query.value)}&limit=5`;
-  const res = await fetch(url, { signal: controller.signal, headers: { 'User-Agent': 'compra-facil-app' } });
+  const url = await searchAddress.getUrl(query.value);
+
+  const res = await fetch(url.url, { signal: controller.signal, headers: { 'User-Agent': 'compra-facil-app' } });
   results.value = await res.json();
 }
 
@@ -74,4 +70,5 @@ function select(place: NominatimResponse) {
   query.value = place.display_name;
   emit('select', selectedCoords.value);
 }
+
 </script>

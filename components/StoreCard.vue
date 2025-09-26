@@ -103,7 +103,6 @@ const panel = ref([0])
 function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
   form.value.lat = coords.lat
   form.value.lon = coords.lon
-  console.log("Destino selecionado:", coords);
 }
 
 const store = useStoreStore();
