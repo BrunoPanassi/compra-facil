@@ -1,9 +1,20 @@
 import { defineNuxtConfig } from "nuxt/config";
+import { transformAssetUrls } from 'vite-plugin-vuetify'
 
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['@/assets/css/main.css'],
   modules: ['vuetify-nuxt-module', '@pinia/nuxt', '@nuxt/fonts', '@nuxtjs/leaflet'],
+  build: {
+    transpile: ['vuetify', 'lodash-es']
+  },
+  vite: {
+    vue: {
+      template: {
+        transformAssetUrls,
+      },
+    },
+  },
   runtimeConfig: {
     useSql: process.env.PRIVATE_USE_SQL,
     openStreetMapUrl: process.env.PRIVATE_OPENSTREETMAP_URL,
