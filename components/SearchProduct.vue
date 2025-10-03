@@ -35,50 +35,56 @@
       </v-card-text>
     </v-card>
 
-    <v-btn 
+    <v-btn
       type="submit" 
       color="#2d6a4f"
       rounded
       block
       class="mt-4"
       @click="calculateBestStores"
+      text="Buscar"
     >
-      Buscar
     </v-btn>
 
-    <!-- Resultado -->
-    <v-card v-if="bestStores.length" class="mt-6">
-      <v-card-title class="text-md text-center font-bold mb-2">Melhores Lojas</v-card-title>
+    <v-bottom-sheet v-model="showResults">
+      <!-- Resultado -->
+      <v-card v-if="bestStores.length" class="mt-6">
+       <v-card-title class="d-flex justify-space-between">
+            <div>Melhores Lojas:</div>
+            <p></p>
+            <v-btn density="compact" icon="mdi-close" class="mt-1" elevation="4" @click="toggleShowResults"></v-btn>
+        </v-card-title>
 
-      <v-card-text>
-        <div v-for="(store, index) in bestStores" :key="store.store.id" class="mb-4 p-2 border rounded">
-          <h4 class="font-semibold">#{{ index + 1 }} - {{ store.store.name }}</h4>
-          <p><strong>Preço total:</strong> R$ {{ store.totalPrice.toFixed(2) }}</p>
-          <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
-          <p><strong>Produtos encontrados:</strong></p>
-          <ul class="ml-4">
-            <li v-for="p in store.foundProducts" :key="p.id_store">
-              {{ p.name }}
-              <br>
-              <strong>R$ </strong>{{ p.price }}
-            </li>
-          </ul>
-          <p v-if="store.missingProducts.length"><strong>Produtos não encontrados:</strong></p>
-          <ul v-if="store.missingProducts.length">
-            <li v-for="p in store.missingProducts" :key="p.id">{{ p.name }}</li>
-          </ul>
-          <v-btn
-            append-icon="mdi-arrow-right-thick"
-            color="#40916c"
-            class="mt-2"
-            block
-            @click="goToBudgetPage(store.foundProducts, store.store)"
-          >
-            Seguir
-          </v-btn>
-        </div>
-      </v-card-text>
-    </v-card>
+        <v-card-text>
+          <div v-for="(store, index) in bestStores" :key="store.store.id" class="mb-4 p-2 border rounded">
+            <h4 class="font-semibold">#{{ index + 1 }} - {{ store.store.name }}</h4>
+            <p><strong>Preço total:</strong> R$ {{ store.totalPrice.toFixed(2) }}</p>
+            <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
+            <p><strong>Produtos encontrados:</strong></p>
+            <ul class="ml-4">
+              <li v-for="p in store.foundProducts" :key="p.id_store">
+                {{ p.name }}
+                <br>
+                <strong>R$ </strong>{{ p.price }}
+              </li>
+            </ul>
+            <p v-if="store.missingProducts.length"><strong>Produtos não encontrados:</strong></p>
+            <ul v-if="store.missingProducts.length">
+              <li v-for="p in store.missingProducts" :key="p.id">{{ p.name }}</li>
+            </ul>
+            <v-btn
+              append-icon="mdi-arrow-right-thick"
+              color="#40916c"
+              class="mt-2"
+              block
+              @click="goToBudgetPage(store.foundProducts, store.store)"
+            >
+              Seguir
+            </v-btn>
+          </div>
+        </v-card-text>
+      </v-card>
+    </v-bottom-sheet>
   </v-card>
 </template>
 
@@ -99,6 +105,11 @@ const budgetStore = useBudgetStore()
 const destinationCoords = ref<{ lat: number; lon: number; display_name: string } | null>(null);
 
 const priorize = ref<string>("price");
+const showResults = ref<boolean>(false);
+
+function toggleShowResults() {
+  showResults.value = !showResults.value;
+}
 
 function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
   destinationCoords.value = coords;
@@ -189,6 +200,7 @@ async function calculateBestStores() {
   })
 
   bestStores.value = candidateStores.sort((a, b) => a.score - b.score).slice(0, 3)
+  toggleShowResults();
 }
 
 function goToBudgetPage(prodStore: Array<ProdutStoreProductDetail>, store: Store) {
