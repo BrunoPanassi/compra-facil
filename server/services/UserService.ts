@@ -12,15 +12,11 @@ export class UserService extends BaseService<User, UserRepository> {
 
   async register(user: User): Promise<User> {
     user.senha = await bcrypt.hash(user.senha, 10);
-    await this.repository.create(user);
+    await this.repository.register(user);
     return user;
   }
 
-  async login(telefone: string, senha: string): Promise<User> {
-    const user = await this.repository.findByTelefone(telefone);
-    if (!user || !(await bcrypt.compare(senha, user.senha))) {
-      throw new Error('Credenciais inválidas');
-    }
-    return user;
+  async login(telefone: string, senha: string) {
+    return this.repository.login(telefone, senha)
   }
 }

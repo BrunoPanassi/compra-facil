@@ -13,6 +13,10 @@ export default defineEventHandler(async (event) => {
   }
 
   const storeService = new StoreService();
-  const stores = await storeService.findByOwner(owner_id);
+  const stores = await storeService.findMany({
+    where: {
+      id: owner_id
+    }
+  });
   return stores;
 });

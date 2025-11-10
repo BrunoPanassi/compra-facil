@@ -1,0 +1,89 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  telefone  String   @unique
+  nome      String
+  role      String
+  stores    Store[]
+  senha     String?
+  createdAt DateTime @default(now())
+}
+
+model Product {
+  id         String   @id @default(uuid())
+  name       String
+  desc       String?
+  brand      String
+  images     String[]
+  materialId String
+  material   Material @relation(fields: [materialId], references: [id])
+  createdAt  DateTime @default(now())
+
+  productStores ProductStore[]
+}
+
+model MaterialType {
+  id        String @id @default(uuid())
+  name      String
+  materials Material[]
+}
+
+model Material {
+  id        String @id @default(uuid())
+  name      String
+  typeId    String
+  materialType MaterialType @relation(fields: [typeId], references: [id])
+  products Product[]
+}
+
+model Store {
+  id                String @id @default(uuid())
+  name              String
+  street            String
+  nr                Int
+  neighbr           String
+  city              String
+  state             String
+  zip               Int
+  lat               Int
+  lon               Int
+  owner_id          String
+  user              User @relation(fields: [owner_id], references: [id])
+  description       String
+  cellphone         Int
+  cellphone_second  Int?
+  email             String
+  facebook          String?
+  instagram         String?
+  another           String?
+
+  productStores ProductStore[]
+}
+
+model ProductStore {
+  id          String @id @default(uuid())
+  id_store    String
+  store       Store @relation(fields: [id_store], references: [id], onDelete: Cascade)
+  id_product  String
+  product     Product @relation(fields: [id_product], references: [id], onDelete: Cascade)
+  price       String
+  quantity    Int
+
+  @@unique([id_store, id_product])
+}

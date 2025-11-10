@@ -1,21 +1,13 @@
-import { defineNuxtConfig } from "nuxt/config";
-import { transformAssetUrls } from 'vite-plugin-vuetify'
+// server/api/helpers/serverConfig.ts
 
-export default defineNuxtConfig({
-  devtools: { enabled: true },
-  css: ['@/assets/css/main.css'],
-  modules: ['vuetify-nuxt-module', '@pinia/nuxt', '@nuxt/fonts', '@nuxtjs/leaflet'],
-  build: {
-    transpile: ['vuetify', 'lodash-es']
-  },
-  vite: {
-    vue: {
-      template: {
-        transformAssetUrls,
-      },
-    },
-  },
-  runtimeConfig: {
+// Cache local (singleton) para não chamar `useRuntimeConfig` múltiplas vezes
+
+/**
+ * Fornece acesso seguro ao runtimeConfig do Nuxt, 
+ * mesmo fora do contexto direto do server handler.
+ */
+export function getServerConfig() {
+  return {
     useSql: process.env.PRIVATE_USE_SQL,
     openStreetMapUrl: process.env.PRIVATE_OPENSTREETMAP_URL,
     googleMapsUrl: process.env.PRIVATE_GOOGLEMAPS_URL,
@@ -27,4 +19,4 @@ export default defineNuxtConfig({
       supabaseAnonKey: process.env.NUXT_PUBLIC_SUPABASE_ANON_KEY
     },
   }
-});
+}

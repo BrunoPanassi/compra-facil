@@ -15,6 +15,9 @@ node_modules
 # System files
 *.log
 
+# .env
+.env
+
 ### Vue ###
 # gitignore template for Vue.js projects
 #
@@ -44,3 +47,9 @@ test/
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/nuxtjs,yarn,vue
+
+/generated/prisma
+
+/generated/prisma
+
+/generated/prisma

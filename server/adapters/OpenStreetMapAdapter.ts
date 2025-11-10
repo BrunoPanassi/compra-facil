@@ -1,11 +1,12 @@
-import type { SearchUrl } from "~/types/SearchAddress";
+import type { SearchUrl } from "../../types/SearchAddress";
+import { getServerConfig } from '../api/helpers/serverConfig';
 
 export class OpenStreetMapAdapter {
 
     private readonly config;
 
     constructor() {
-        this.config = useRuntimeConfig()
+        this.config = getServerConfig()
     }
     
     async getUrl(query: string): Promise<SearchUrl> {

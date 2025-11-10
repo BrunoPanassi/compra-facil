@@ -118,7 +118,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useMaterialStore } from '#imports';
+import { useMaterialStore } from '@/stores/material';
 import type { Product } from '@/types/Product';
 import { resizeAndCompressImage } from '~/util/image';
 import { maxQuantRule, minQuantRule, priceRule, requiredRule } from '~/util/rule';

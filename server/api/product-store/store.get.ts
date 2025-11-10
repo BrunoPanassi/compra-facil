@@ -11,6 +11,10 @@ export default defineEventHandler(async (event) => {
         };
     }
     const productStoreService = new ProductStoreService();
-    const products = await productStoreService.getByStore(store_id)
+    const products = await productStoreService.findMany({
+        where: {
+            id: store_id
+        }
+    })
     return products;
 })

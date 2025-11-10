@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
-
-export class JsonAdapter<T extends { id: number }> {
+import bcrypt from 'bcrypt';
+export class JsonAdapter<T extends { id: number, [key:string]: string|number }> {
   private readonly filePath: string;
 
   constructor(entityName: string) {
@@ -56,5 +56,59 @@ export class JsonAdapter<T extends { id: number }> {
 
   async saveAll(data: T[]): Promise<void> {
     await fs.writeFile(this.filePath, JSON.stringify(data, null, 2));
+  }
+
+  async findOne(propAndValue: any) {
+    const prop = Object.keys(propAndValue)[0]
+    const value = Object.values(propAndValue)[0]
+    const data = await this.getAll();
+    return data.find(d => d[prop] == value)
+  }
+
+  async findMany(propAndValue?: any) {
+    if (propAndValue) {
+      const { prop, value } = propAndValue
+      const data = await this.getAll();
+      return data.filter(d => d[prop] == value)
+    }
+    return await this.getAll();
+  }
+    
+
+  async getPaginated({
+    prop = 'name',
+    search = '',
+    page = 1,
+    perPage = 10
+  }) {
+    const data = await this.getAll()
+    const filtered = search ? 
+      data.filter(d => 
+        (d[prop]?.toString().toLowerCase() || '').includes(search?.toLowerCase()))
+      : data
+
+    const offset = (page - 1) * perPage
+    return {
+      items: filtered.slice(offset, offset + perPage),
+      total: filtered.length
+    }
+  }
+
+  async register(item: T) {
+    const data = await this.findOne({prop: 'telefone', value: item.telefone as string})
+    if (data) {
+      throw new Error('Usuário já cadastrado com esse telefone!')
+    }
+    
+    await this.add(item);
+  }
+
+  async login(telefone: string, senha: string) {
+    const user = await this.findOne({prop: 'telefone', value: telefone})
+    const userSenha = user?.senha as string
+    if (!user || !(await bcrypt.compare(senha, userSenha))) {
+      throw new Error('Credenciais inválidas');
+    }
+    return user;
   }
 }

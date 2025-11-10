@@ -1,9 +1,11 @@
+import { getServerConfig } from '../api/helpers/serverConfig';
+
 export class OpenStreetMapService {
 
     private readonly config;
 
     constructor() {
-        this.config = useRuntimeConfig()
+        this.config = getServerConfig()
     }
     
     getUrl(query: string) {

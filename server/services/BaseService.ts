@@ -1,4 +1,6 @@
-export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id: number) => Promise<T | undefined>; add: (entity: T) => Promise<void>; update: (id: number, entity: T) => Promise<void>; delete: (id: number) => Promise<void>; getByIds: (id: number[]) => Promise<T[]>; }> {
+import { Options, Response } from "~/types/Paginated";
+
+export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id: number) => Promise<T | undefined>; add: (entity: T) => Promise<void>; update: (id: number, entity: T) => Promise<void>; delete: (id: number) => Promise<void>; getByIds: (id: number[]) => Promise<T[]>; findOne: (item: Object) => Promise<void>; findMany: (item: Object) => Promise<void>; getPaginated: (options: Options) => Promise<Response<T>>}> {
     constructor(protected repository: R) {}
 
     async create(store: T): Promise<T> {
@@ -14,6 +16,14 @@ export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id
         return this.repository.getAll()
     }
 
+    async findOne(where: Object) {
+        return this.repository.findOne(where)
+    }
+
+    async findMany(where: Object) {
+        return this.repository.findMany(where)
+    }
+
     async update(id: number, updated: T): Promise<T> {
         await this.repository.update(id, updated);
         return updated;
@@ -25,5 +35,9 @@ export class BaseService<T, R extends { getAll: () => Promise<T[]>; getById: (id
 
     async getByIds(ids: number[]): Promise<T[]> {
         return await this.repository.getByIds(ids);
+    }
+
+    async getPaginated(options: Options) {
+        return await this.repository.getPaginated(options)
     }
 }

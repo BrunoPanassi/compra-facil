@@ -1,5 +1,6 @@
 import { GoogleMapsAdapter } from "../adapters/GoogleMapsAdapter";
 import { OpenStreetMapAdapter } from "../adapters/OpenStreetMapAdapter";
+import { getServerConfig } from '../api/helpers/serverConfig';
 
 export class SearchAddress {
 
@@ -8,7 +9,7 @@ export class SearchAddress {
 
 
     constructor() {
-        this.config = useRuntimeConfig();
+        this.config = getServerConfig();
         let useGoogleMapsSearchAddress = this.config.useGoogleMapsSearchAddress === 'true';
         if (useGoogleMapsSearchAddress) {
             this.searchAddressClass = new GoogleMapsAdapter()

@@ -1,34 +1,9 @@
-import type { DataAdapter } from '~/types/Paginated';
 import { BaseRepository } from './BaseRepository';
 import type { ProductStore } from '~/types/ProductStore';
 
-export class ProductStoreRepository extends BaseRepository<ProductStore> implements DataAdapter<ProductStore>{
+export class ProductStoreRepository extends BaseRepository<ProductStore> {
 
   constructor(useSql: boolean = false) {
     super('product-store', useSql)
-  }
-
-  async getPaginated({
-    prop = 'name',
-    search = '',
-    page = 1,
-    perPage = 10
-  }) {
-    const data = await this.getAll()
-    const filtered = search ? 
-      data.filter(d => 
-        (d[prop]?.toString().toLowerCase() || '').includes(search?.toLowerCase()))
-      : data
-
-    const offset = (page - 1) * perPage
-    return {
-      items: filtered.slice(offset, offset + perPage),
-      total: filtered.length
-    }
-  }
-
-  async getByStore(storeId: number) {
-    const data = await this.getAll()
-    return data.filter(productStore => productStore.id_store == storeId)
   }
 }
