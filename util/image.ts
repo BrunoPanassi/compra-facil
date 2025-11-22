@@ -1,9 +1,9 @@
 export function resizeAndCompressImage(
   file: File,
-  options: {
-    maxWidth: number;
-    maxHeight: number;
-    quality: number;
+  options = {
+    maxWidth: 800,
+    maxHeight: 800,
+    quality: 0.7
   }
 ): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -51,4 +51,58 @@ export function resizeAndCompressImage(
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+export async function processImageAndReturnUrl(imageObject: File | string) {
+  if (imageObject instanceof File) {
+    const data = await resizeAndCompressImage(imageObject)
+    return await uploadImageHostingReturnUrl(data)
+  }
+  if (typeof imageObject === 'string') {
+    if (isValidURL(imageObject)) {
+      return imageObject
+    }
+    if (isValidBase64(imageObject)) {
+      return await uploadImageHostingReturnUrl(imageObject)
+    }
+  }
+  return imageObject
+}
+
+export function isValidURL(url: string) {
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export function isValidBase64(str: string) {
+  // Regular expression to match Base64 characters and padding
+  const base64Regex = /^(?:[A-Za-z0-9+/]{4})*(?:[A-Za-z0-9+/]{2}==|[A-Za-z0-9+/]{3}=)?$/;
+
+  // Check if the string matches the Base64 pattern
+  if (!base64Regex.test(str)) {
+    return false;
+  }
+
+  // Attempt to decode the string to verify its integrity
+  try {
+    atob(str);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export async function uploadImageHostingReturnUrl(imageBase64: string) {
+  const imageHostingUrl = 'https://api.imgbb.com/1/upload?key=83881527799e244d9d01f87dd33f90e9'
+  const form = new FormData();
+  form.append('image', imageBase64.split(',').pop() || ''); // ou convert to base64 as API requires
+  const resp = await $fetch(imageHostingUrl, {
+    method: 'POST',
+    body: form
+  });
+  return (resp as any).data.url as string
 }

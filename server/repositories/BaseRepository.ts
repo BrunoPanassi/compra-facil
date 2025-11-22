@@ -1,13 +1,44 @@
-import { JsonAdapter } from '@/server/adapters/JsonAdapter';
 import { SqlAdapter } from '@/server/adapters/SqlAdapter';
+import { JSONBinAdapter } from '../adapters/JSONBinAdapter';
 
 export class BaseRepository<T extends { id: number }> {
-    protected adapter: JsonAdapter<T> | SqlAdapter<T>;
+    protected adapter: JSONBinAdapter<T> | SqlAdapter<T>;
+
+    private readonly tableJsonBinIds = [
+        {
+            "table": "users",
+            "binId": process.env.JSONBIN_USERS_ID ?? ''
+        },
+                {
+            "table": "stores",
+            "binId": process.env.JSONBIN_STORES_ID ?? ''
+        },
+                {
+            "table": "products",
+            "binId": process.env.JSONBIN_PRODUCTS_ID ?? ''
+        },
+                {
+            "table": "materials",
+            "binId": process.env.JSONBIN_MATERIALS_ID ?? ''
+        },
+                {
+            "table": "material-types",
+            "binId": process.env.JSONBIN_MATERIAL_TYPES_ID ?? ''
+        },
+                {
+            "table": "product-store",
+            "binId": process.env.JSONBIN_PRODUCT_STORES_ID ?? ''
+        }
+    ]
     
     constructor(entityName: string, useSql: boolean = false) {
     this.adapter = useSql
         ? new SqlAdapter<T>(entityName)
-        : new JsonAdapter<T>(entityName);
+        : new JSONBinAdapter<T>(this.findBinId(entityName));
+    }
+
+    findBinId(table: string) {
+        return this.tableJsonBinIds.find(val => val.table == table)?.binId ?? ''
     }
 
     async getAll(): Promise<T[]> {
@@ -18,8 +49,8 @@ export class BaseRepository<T extends { id: number }> {
         return this.adapter.getById(id);
     }
 
-    async add(store: T): Promise<void> {
-        await this.adapter.add(store);
+    async add(data: T): Promise<void> {
+        await this.adapter.add(data);
     }
 
     async update(id: number, updated: T): Promise<void> {

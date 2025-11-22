@@ -26,6 +26,7 @@
         :items="items"
         item-value="id"
         class="elevation-1"
+        :loading="loadingDataTable"
         :mobile="$vuetify.display.mobile"
       >
         <template #item.actions="{ item }">
@@ -51,7 +52,8 @@ const props = defineProps({
   title: String,
   headers: { type: Array<Object>, default: []},
   items: Array,
-  modelValue: Boolean
+  modelValue: Boolean,
+  loadingDataTable: { type: Boolean, default: false}
 });
 
 const emit = defineEmits(['edit', 'delete', 'update:modelValue']);

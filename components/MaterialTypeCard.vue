@@ -43,16 +43,21 @@ const headers = [
   { title: 'Ações', key: 'actions', sortable: false },
 ];
 
+const loading = ref(false);
 onMounted(() => {
+  loading.value = true;
   store.fetch();
+  loading.value = false;
 });
 
 function handleSubmit() {
-  if (editingId.value !== null) {
+  if (editingId.value === null) {
+    store.add({ ...form.value });
+  } else {
+    loading.value = true;
     store.update({ ...form.value });
     editingId.value = null;
-  } else {
-    store.add({ ...form.value });
+    loading.value = false;
   }
   resetForm();
 }
@@ -64,7 +69,9 @@ function editMaterial(material: MaterialType) {
 }
 
 function deleteMaterial(id: number) {
+  loading.value = true;
   store.delete(id);
+  loading.value = false;
 }
 
 function resetForm() {

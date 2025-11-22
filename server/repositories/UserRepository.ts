@@ -3,7 +3,8 @@ import { BaseRepository } from './BaseRepository';
 
 
 export class UserRepository extends BaseRepository<User> {
-  
+  private readonly usersBinId = process.env.JSONBIN_USERS_ID
+
   constructor(useSql: boolean = false) {
     super('users', useSql)
   }
