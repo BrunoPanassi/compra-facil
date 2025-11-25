@@ -7,34 +7,34 @@ export class BaseRepository<T extends { id: number }> {
     private readonly tableJsonBinIds = [
         {
             "table": "users",
-            "binId": process.env.JSONBIN_USERS_ID ?? ''
+            "binId": '6912585e43b1c97be9a57673'
         },
                 {
             "table": "stores",
-            "binId": process.env.JSONBIN_STORES_ID ?? ''
+            "binId": '6912588c43b1c97be9a576b4'
         },
                 {
             "table": "products",
-            "binId": process.env.JSONBIN_PRODUCTS_ID ?? ''
+            "binId": '691258eed0ea881f40e06d73'
         },
                 {
             "table": "materials",
-            "binId": process.env.JSONBIN_MATERIALS_ID ?? ''
+            "binId": '69125914d0ea881f40e06da8'
         },
                 {
             "table": "material-types",
-            "binId": process.env.JSONBIN_MATERIAL_TYPES_ID ?? ''
+            "binId": '691259d543b1c97be9a5785b'
         },
                 {
             "table": "product-store",
-            "binId": process.env.JSONBIN_PRODUCT_STORES_ID ?? ''
+            "binId": '69125a71d0ea881f40e06f3a'
         }
     ]
     
     constructor(entityName: string, useSql: boolean = false) {
-    this.adapter = useSql
-        ? new SqlAdapter<T>(entityName)
-        : new JSONBinAdapter<T>(this.findBinId(entityName));
+        this.adapter = useSql
+            ? new SqlAdapter<T>(entityName)
+            : new JSONBinAdapter<T>(this.findBinId(entityName));
     }
 
     findBinId(table: string) {

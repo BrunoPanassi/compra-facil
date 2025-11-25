@@ -1,9 +1,12 @@
 export class JSONBinAdapter<T extends { id: number }> {
     private readonly binId: string;
-    private readonly baseUrl = process.env.JSONBIN_BASE_URL!;
-    private readonly apiKey = process.env.JSONBIN_API_KEY!;
+    private baseUrl = "";
+    private apiKey = "";
 
     constructor(binId: string) {
+        const config = useRuntimeConfig();
+        this.baseUrl = config.public.jsonBinBaseUrl as string
+        this.apiKey = config.jsonBinApiKey as string
         this.binId = binId;
     }
 
