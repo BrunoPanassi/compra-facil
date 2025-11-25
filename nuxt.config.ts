@@ -21,7 +21,15 @@ export default defineNuxtConfig({
     googleMapsUrl: process.env.PRIVATE_GOOGLEMAPS_URL,
     useGoogleMapsSearchAddress: process.env.PRIVATE_USE_GOOGLEMAPS_SEARCH_ADDRESS,
     public: {
-      useLeafletUI: process.env.PRIVATE_USE_LEAFLET_UI
-    }
+      useLeafletUI: process.env.PRIVATE_USE_LEAFLET_UI,
+      jsonBinBaseUrl: process.env.JSONBIN_BASE_URL
+    },
+    jsonBinApiKey: process.env.JSONBIN_API_KEY,
+    jsonBinUsersId: process.env.JSONBIN_USERS_ID,
+    jsonBinStoresId: process.env.JSONBIN_STORES_ID,
+    jsonBinProductsId: process.env.JSONBIN_PRODUCTS_ID,
+    jsonBinMaterialsId: process.env.JSONBIN_MATERIALS_ID,
+    jsonBinMaterialTypesId: process.env.JSONBIN_MATERIAL_TYPES_ID,
+    jsonBinProductStoresId: process.env.JSONBIN_PRODUCT_STORES_ID,
   }
 });
