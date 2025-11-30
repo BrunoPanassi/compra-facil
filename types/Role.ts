@@ -8,3 +8,27 @@ export enum EnumRole {
 export const Role = [EnumRole.CLIENT, EnumRole.ADMIN, EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER]
 
 export type Role = typeof Role[number];
+
+export interface RoleRoute {
+    role: string,
+    route: string
+}
+
+export const roleRoutes: RoleRoute[] = [
+    {
+        role: EnumRole.SERVICE_PROVIDER,
+        route: '/serviceProvider'
+    },
+    {
+        role: EnumRole.ADMIN,
+        route: '/admin'
+    },
+    {
+        role: EnumRole.STORE_OWNER,
+        route: '/store'
+    },
+    {
+        role: EnumRole.CLIENT,
+        route: '/users'
+    }
+]
