@@ -16,8 +16,8 @@ export const useAuthStore = defineStore('auth', {
 
       if (error.value) {
         const data = error.value.data
-        const defaultMessage = 'Falha ao fazer login'
-        showErrorMessage(defaultMessage, data?.message)
+        const defaultMessage = 'Erro ao se autenticar, tente novamente.'
+        throw new Error(showErrorMessage(defaultMessage, data?.message))
       }
       this.user = data.value as any;
     },

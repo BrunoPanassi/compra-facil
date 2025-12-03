@@ -19,7 +19,7 @@ export class UserService extends BaseService<User, UserRepository> {
   async login(telefone: string, senha: string): Promise<User> {
     const user = await this.repository.findByTelefone(telefone);
     if (!user || !(await bcrypt.compare(senha, user.senha))) {
-      throw new Error('Credenciais inválidas');
+      throw new Error('Telefone ou senha inválidá, revise-os e tente novamente.');
     }
     return user;
   }

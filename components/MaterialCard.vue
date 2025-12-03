@@ -4,6 +4,7 @@
     :headers="headers"
     :items="items"
     v-model="register"
+    :loading-data-table="loading"
     @edit="editMaterial"
     @delete="deleteMaterial"
   >
@@ -58,9 +59,12 @@ const headers = [
   { title: 'Ações', key: 'actions', sortable: false },
 ];
 
+const loading = ref(false);
 onMounted(() => {
+  loading.value = true;
   materialStore.fetch();
   materialTypeStore.fetch();
+  loading.value = false;
 });
 
 const items = computed(() => materialStore.items.map((mat: Material) => {
@@ -71,11 +75,15 @@ const items = computed(() => materialStore.items.map((mat: Material) => {
 }))
 
 function handleSubmit() {
-  if (editingId.value !== null) {
+  if (editingId.value === null) {
+    loading.value = true;
+    materialStore.add({ ...form.value });
+    loading.value = false;
+  } else {
+    loading.value = true;
     materialStore.update({ ...form.value });
     editingId.value = null;
-  } else {
-    materialStore.add({ ...form.value });
+    loading.value = false;
   }
   resetForm();
 }
@@ -87,7 +95,9 @@ function editMaterial(material: Material) {
 }
 
 function deleteMaterial(id: number) {
+  loading.value = true;
   materialStore.delete(id);
+  loading.value = false;
 }
 
 function resetForm() {

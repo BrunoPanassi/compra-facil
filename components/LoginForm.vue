@@ -112,7 +112,7 @@
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import { EnumRole, type Role } from '~/types/Role';
+import { EnumRole, roleRoutes, type Role } from '~/types/Role';
 import { vMaska } from 'maska/vue';
 import { requiredRule, passwordRule } from '~/util/rule';
 
@@ -180,13 +180,22 @@ async function handleLogin() {
   }
 }
 
+function findRouteOnRole(role: string) {
+  const route = roleRoutes.find(roleRoute => roleRoute.role == role);
+  if (route) {
+    return route.route
+  }
+  return null
+}
+
 async function routerPushOnUserRole() {
-  if (auth.user?.role === EnumRole.SERVICE_PROVIDER) {
-    router.push('/serviceProvider');
-  } else if (auth.user?.role === EnumRole.STORE_OWNER) {
-    router.push('/store');
-  } else {
-    router.push('/users');
+  let route: string | null = null;
+  if (auth.user?.role) {
+    route = findRouteOnRole(auth.user.role)
+    if (route) router.push(route)
+  }
+  if (!route) {
+    alert('Rota não encontrada!')
   }
 }
 </script>

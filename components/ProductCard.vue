@@ -4,6 +4,7 @@
     :headers="headers"
     :items="productStoreDataTable"
     v-model="register"
+    :loading-data-table="loading"
     @edit="editProduct"
     @delete="deleteProduct"
   >
@@ -120,8 +121,8 @@
 import { ref, onMounted } from 'vue';
 import { useMaterialStore } from '#imports';
 import type { Product } from '@/types/Product';
-import { resizeAndCompressImage } from '~/util/image';
-import { maxQuantRule, minQuantRule, priceRule, requiredRule } from '~/util/rule';
+import { resizeAndCompressImage, uploadImageHostingReturnUrl } from '~/util/image';
+import { maxQuantRule, priceRule, requiredRule } from '~/util/rule';
 import ProductCombobox from './ProductCombobox.vue';
 import { type ProductStore, type ProductStoreDataTable } from '~/types/ProductStore';
 
@@ -197,16 +198,19 @@ function onProductClear() {
 
 const storeSelected = ref<number>();
 const productStoreDataTable = ref<ProductStoreDataTable[]>()
+const loading = ref(false);
 async function onStoreSelect() {
   if (storeSelected.value) {
     const { items } = await productStoreStore.byStore(storeSelected.value)
     if (items.length) {
 
       const productIds = items.map(prodStore => prodStore.id_product)
+      loading.value = true;
       const products = await productStore.fetch({
         prop: '',
         ids: productIds.join(',')
       })
+      loading.value = false;
 
       productStoreDataTable.value = products.items
           .map(prod => {
@@ -244,6 +248,7 @@ async function handleSubmit() {
   } else {
     handleSubmitProductAndStore()
   }
+  onStoreSelect()
 }
 
 function handleEditProduct() {
@@ -369,7 +374,7 @@ const onFileChange = async (file: any) => {
     if (!file) {
         return
     }
-    const files = file.target.files
+    const files = file.target.files as FileList
     let count = files.length;
     if (count > QUANTIDADE_MAXIMA_IMAGENS
       || (form.value.images.length + count) > QUANTIDADE_MAXIMA_IMAGENS
@@ -392,7 +397,10 @@ const onFileChange = async (file: any) => {
               maxHeight: 800,
               quality: 0.7,
             });
-            form.value.images.push(data as string)
+
+            const imageUrl = await uploadImageHostingReturnUrl(data)
+            form.value.images.push(imageUrl)
+            
             index++
           } catch (e) {
             alert(e)
