@@ -12,6 +12,21 @@
             </v-img>
         </v-toolbar-title>
 
+        <v-btn 
+          icon
+          @click="toggleDialogBudgetList"
+        >
+          <v-badge
+            v-if="budgetProductsStore.getTotal()"
+            location="top right" 
+            color="success" 
+            :content="budgetProductsStore.getTotal()"
+          >
+            <v-icon icon="mdi-format-list-bulleted-square"></v-icon>
+          </v-badge>
+          <v-icon v-else icon="mdi-format-list-bulleted-square"></v-icon>
+        </v-btn>
+
         <v-menu>
           <template v-slot:activator="{ props }">
             <v-btn 
@@ -38,25 +53,28 @@
     </v-app-bar>
 
     <v-navigation-drawer
-        v-model="drawer"
-        :location="$vuetify.display.mobile ? 'bottom' : undefined"
-        temporary
-      >
-        <v-list
+      v-model="drawer"
+      :location="$vuetify.display.mobile ? 'bottom' : undefined"
+      temporary
+    >
+      <v-list>
+        <v-list-item
+          v-for="(item, index) in menuFilteredByUserRole"
+          :key="index"
+          :value="index"
+          @click="goTo(item.value)"
         >
-          <v-list-item
-            v-for="(item, index) in menuFilteredByUserRole"
-            :key="index"
-            :value="index"
-            @click="goTo(item.value)"
-          >
-            <template v-slot:prepend>
-              <v-icon :icon="item.icon"></v-icon>
-            </template>
-            <v-list-item-title v-text="item.title" ></v-list-item-title>
-          </v-list-item>
-        </v-list>
-      </v-navigation-drawer>
+          <template v-slot:prepend>
+            <v-icon :icon="item.icon"></v-icon>
+          </template>
+          <v-list-item-title v-text="item.title" ></v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-navigation-drawer>
+
+    <BudgetProductList
+      v-model="dialogBudgetList"
+    />
 
     <v-main>
       <div>
@@ -74,6 +92,8 @@ import { useRouter } from 'vue-router';
 const auth = useAuthStore();
 const router = useRouter();
 
+const budgetProductsStore = useBudgetProductsStore()
+
 const accountMenuItems = [
   { title: 'Deslogar' , icon: 'mdi-logout', func: logout}
 ]
@@ -83,11 +103,17 @@ function logout() {
   router.push('/')
 }
 
+const dialogBudgetList = ref(false)
+
+function toggleDialogBudgetList() {
+  dialogBudgetList.value = !dialogBudgetList.value
+}
+
 const drawer = ref(false)
 
 const menuItems = [
         {
-          title: 'Pesquisar Produtos',
+          title: 'Orçamento',
           value: 'users',
           icon: 'mdi-magnify',
           role: [EnumRole.CLIENT, EnumRole.SERVICE_PROVIDER, EnumRole.STORE_OWNER, EnumRole.ADMIN]
