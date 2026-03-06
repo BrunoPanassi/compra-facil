@@ -131,10 +131,6 @@ function onDestinationSelect(coords: { lat: number; lon: number; display_name: s
   console.log("Destino selecionado:", coords);
 }
 
-onMounted(() => {
-  console.log("on fuckin mounted bitch")
-})
-
 const selectedProducts = ref<Product[]>();
 function onProductSelect(products: Product[]) {
   selectedProducts.value = products
