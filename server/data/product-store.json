@@ -61,5 +61,12 @@
     "id_product": 4,
     "price": "101.90",
     "quantity": 100
+  },
+  {
+    "id": 10,
+    "id_store": 4,
+    "id_product": 1,
+    "price": "67.77",
+    "quantity": 150
   }
 ]

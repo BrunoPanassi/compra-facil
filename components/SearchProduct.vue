@@ -1,21 +1,35 @@
 <template>
   <v-card class="p-4 background-primary">
-    <ProductCombobox 
-      :disabled="false"
-      :multiple="true"
-      @on-select="onProductSelect"
-      @on-clear="onProductClear"
+    <v-card>
+      <v-card-title class="text-h6">
+        Produtos
+      </v-card-title>
+      <ProductCombobox 
+        :disabled="false"
+        :multiple="true"
+        @on-select="onProductSelect"
+        @on-clear="onProductClear"
+      />
+    </v-card>
+
+    <SelectedProductList
+      v-model:products="selectedProducts"
+      :show-quantity="true"
     />
 
-    <v-expansion-panels v-model="panel">
-      <v-expansion-panel title="Destino">
-        <v-expansion-panel-text>
-          <AddressPicker @select="onDestinationSelect" />
-        </v-expansion-panel-text>
-      </v-expansion-panel>
-    </v-expansion-panels>
+    <v-card class="mb-4">
+      <v-card-title class="text-h6">
+        Destino
+      </v-card-title>
+      <v-card-item class="pa-4">
+        <AddressPicker @select="onDestinationSelect" />
+      </v-card-item>
+    </v-card>
 
     <v-card>
+      <v-card-title class="text-h6">
+        Buscar Loja
+      </v-card-title>
       <p class="ml-6 mt-2">Priorizar por:</p>
       <v-card-text>
         <v-btn-toggle
@@ -33,18 +47,18 @@
           </v-btn>
         </v-btn-toggle>
       </v-card-text>
+      <v-card-item class="px-6">
+        <v-btn
+          type="submit" 
+          color="#2d6a4f"
+          rounded
+          block
+          @click="calculateBestStores"
+          text="Buscar"
+        >
+        </v-btn>
+      </v-card-item>
     </v-card>
-
-    <v-btn
-      type="submit" 
-      color="#2d6a4f"
-      rounded
-      block
-      class="mt-4"
-      @click="calculateBestStores"
-      text="Buscar"
-    >
-    </v-btn>
 
     <v-bottom-sheet v-model="showResults">
       <!-- Resultado -->
@@ -93,6 +107,7 @@ import AddressPicker from "@/components/AddressPicker.vue";
 import type { Product } from '~/types/Product';
 import { ref } from "vue"
 import { haversineDistance } from '~/util/geoUtils';
+import SelectedProductList from '@/components/SelectedProductList.vue'
 import type { ProductStore, ProdutStoreProductDetail, BestStoreResult } from "~/types/ProductStore";
 import { useBudgetStore } from "~/stores/budget";
 import type { Store } from "~/types/Store";
@@ -116,9 +131,13 @@ function onDestinationSelect(coords: { lat: number; lon: number; display_name: s
   console.log("Destino selecionado:", coords);
 }
 
+onMounted(() => {
+  console.log("on fuckin mounted bitch")
+})
+
 const selectedProducts = ref<Product[]>();
-function onProductSelect(product: Product[]) {
-  selectedProducts.value = product
+function onProductSelect(products: Product[]) {
+  selectedProducts.value = products
 }
 
 function onProductClear() {

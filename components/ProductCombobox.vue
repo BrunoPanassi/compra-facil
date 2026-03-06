@@ -11,7 +11,10 @@
     clearable
     :multiple="multiple"
     :chips="multiple"
-    label="Produtos"
+    :closable-chips="multiple"
+    auto-select-first="exact"
+    clear-on-select
+    label="Selecione"
     variant="solo-filled"
     :disabled="disabled"
     @update:search="onSearch"

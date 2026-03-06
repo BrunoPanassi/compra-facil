@@ -46,5 +46,21 @@
     "description": "",
     "cellphone": 0,
     "email": ""
+  },
+  {
+    "id": 4,
+    "name": "Loja Comendador Franco",
+    "street": "Avenida Comendador Franco",
+    "nr": 0,
+    "neighbr": "Jardim Botânico",
+    "city": "Curitiba",
+    "state": "PR",
+    "zip": 80215090,
+    "lat": -25.4455473,
+    "lon": -49.2461493,
+    "owner_id": 2,
+    "description": "materiais para construção",
+    "cellphone": 1231231321321,
+    "email": ""
   }
 ]

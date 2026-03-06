@@ -1,8 +1,9 @@
 import { SqlAdapter } from '@/server/adapters/SqlAdapter';
 import { JSONBinAdapter } from '../adapters/JSONBinAdapter';
+import { JsonAdapter } from '../adapters/JsonAdapter';
 
 export class BaseRepository<T extends { id: number }> {
-    protected adapter: JSONBinAdapter<T> | SqlAdapter<T>;
+    protected adapter: JsonAdapter<T> | SqlAdapter<T>;
 
     private readonly tableJsonBinIds = [
         {
@@ -34,7 +35,7 @@ export class BaseRepository<T extends { id: number }> {
     constructor(entityName: string, useSql: boolean = false) {
         this.adapter = useSql
             ? new SqlAdapter<T>(entityName)
-            : new JSONBinAdapter<T>(this.findBinId(entityName));
+            : new JsonAdapter<T>(entityName);
     }
 
     findBinId(table: string) {
