@@ -1,5 +1,5 @@
 <template>
-  <v-combobox
+  <v-autocomplete
     v-model="selectedProduct"
     v-model:search="searchText"
     :loading="loading"
@@ -10,10 +10,8 @@
     return-object
     clearable
     :multiple="multiple"
-    :chips="multiple"
-    :closable-chips="multiple"
+    hide-no-data
     auto-select-first="exact"
-    clear-on-select
     label="Selecione"
     variant="solo-filled"
     :disabled="disabled"
@@ -29,7 +27,7 @@
       >
       </v-list-item>
     </template>
-  </v-combobox>
+  </v-autocomplete>
 </template>
 
 <script setup lang="ts">
@@ -73,8 +71,10 @@ const fetchProducts = debounce(async (query: string) => {
       perPage
 
     })
-    productItems.value = items
-    totalItems = total
+    if (items && items.length) {
+      productItems.value = items
+      totalItems = total
+    }
   } else {
     productItems.value = []
   }
@@ -97,6 +97,9 @@ function onClear() {
 }
 
 function onSelect() {
-    emit('onSelect', selectedProduct.value)
+    if (selectedProduct.value && productItems.value && productItems.value.length) {
+      emit('onSelect', selectedProduct.value)
+      searchText.value = ''
+    }
 }
 </script>

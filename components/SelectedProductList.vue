@@ -1,18 +1,18 @@
 <template>
   <v-list lines="two" density="comfortable" class="mb-4">
     <v-list-item
-      v-for="product in budgetProductsStore.getProducts()"
-      :key="product.id"
+      v-for="product in getProducts"
+      :key="product?.id"
       class="flex-column align-start"
     >
       <!-- Linha principal -->
       <div class="w-100 d-flex align-center justify-space-between">
         <div class="d-flex align-center ga-3">
           <v-avatar size="48">
-            <v-img :src="product.images[0]" cover />
+            <v-img :src="product?.images && product?.images[0]" cover />
           </v-avatar>
 
-          <span class="text-caption">{{ product.name }}</span>
+          <span class="text-caption">{{ product?.name }}</span>
         </div>
 
         <!-- Quantidade -->
@@ -24,20 +24,20 @@
             icon
             size="x-small"
             variant="tonal"
-            @click="updateQuantity(product.id, product.quantity - 1)"
+            @click="updateQuantity(product?.id, product?.quantity - 1)"
           >
             <v-icon>mdi-minus</v-icon>
           </v-btn>
 
           <span class="font-weight-medium px-2">
-            {{ product.quantity }}
+            {{ product?.quantity }}
           </span>
 
           <v-btn
             icon
             size="x-small"
             variant="tonal"
-            @click="updateQuantity(product.id, product.quantity + 1)"
+            @click="updateQuantity(product?.id, product?.quantity + 1)"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
@@ -55,10 +55,10 @@
             <v-expansion-panel-text>
               <div class="text-body-2">
                 <p v-if="product.description">
-                  <strong>Descrição:</strong> {{ product.description }}
+                  <strong>Descrição:</strong> {{ product?.description }}
                 </p>
                 <p v-if="product.brand">
-                  <strong>Marca:</strong> {{ product.brand }}
+                  <strong>Marca:</strong> {{ product?.brand }}
                 </p>
               </div>
             </v-expansion-panel-text>
@@ -98,6 +98,8 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const budgetProductsStore = useBudgetProductsStore()
+
+const getProducts = computed(() => budgetProductsStore.getProducts() ?? [] as Array<Product>)
 
 const emit = defineEmits<{
   (e: 'update:selectedProducts', value: SelectedProduct[]): void
