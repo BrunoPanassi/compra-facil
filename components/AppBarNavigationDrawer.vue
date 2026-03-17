@@ -61,13 +61,14 @@
         <v-list-item
           v-for="(item, index) in menuFilteredByUserRole"
           :key="index"
-          :value="index"
+          :value="item.value"
           @click="goTo(item.value)"
+          :disabled="currentPathName == item.value"
         >
           <template v-slot:prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
-          <v-list-item-title v-text="item.title" ></v-list-item-title>
+          <v-list-item-title v-text="item.title"></v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>
@@ -90,6 +91,7 @@ import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
 
 const auth = useAuthStore();
+const route = useRoute();
 const router = useRouter();
 
 const budgetProductsStore = useBudgetProductsStore()
@@ -104,6 +106,8 @@ function logout() {
 }
 
 const dialogBudgetList = ref(false)
+
+const currentPathName = computed(() => route.name)
 
 function toggleDialogBudgetList() {
   dialogBudgetList.value = !dialogBudgetList.value
