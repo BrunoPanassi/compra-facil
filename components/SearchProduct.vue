@@ -133,7 +133,9 @@ function onDestinationSelect(coords: { lat: number; lon: number; display_name: s
 
 const selectedProducts = ref<Product[]>();
 function onProductSelect(products: Product[]) {
-  selectedProducts.value = products
+  if (products && products.length) {
+    selectedProducts.value = products
+  }
 }
 
 function onProductClear() {
