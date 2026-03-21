@@ -90,6 +90,7 @@
                 color="#2d6a4f"
                 rounded
                 block
+                :loading="loadingStore.getLoading()"
               >
                 {{ toRegister ? 'Registrar' : 'Logar' }}
               </v-btn>
@@ -115,6 +116,7 @@ import { ref } from 'vue';
 import { EnumRole, roleRoutes, type Role } from '~/types/Role';
 import { vMaska } from 'maska/vue';
 import { requiredRule, passwordRule } from '~/util/rule';
+import { showErrorMessage } from '~/util/Util';
 
 const form = ref()
 const auth = useAuthStore();
@@ -142,6 +144,7 @@ async function toggleToRegister() {
 }
 
 async function handleRegisterLogin() {
+  loadingStore.updateLoading(true)
   if (toRegister.value) {
     return await handleRegister()
   } else {
@@ -160,6 +163,8 @@ async function handleRegister() {
         routerPushOnUserRole()
       } catch (e: any) {
         error.value = e.message || 'Erro ao cadastrar';
+      } finally {
+        loadingStore.updateLoading(false)
       }
     }
   }
@@ -175,6 +180,8 @@ async function handleLogin() {
       routerPushOnUserRole()
     } catch (e: any) {
       error.value = e.message || 'Erro ao fazer login';
+    } finally {
+      loadingStore.updateLoading(false)
     }
     }
   }
@@ -188,11 +195,19 @@ function findRouteOnRole(role: string) {
   return null
 }
 
+const loadingStore = useLoadingStore()
+
 async function routerPushOnUserRole() {
   let route: string | null = null;
   if (auth.user?.role) {
     route = findRouteOnRole(auth.user.role)
-    if (route) router.push(route)
+
+    try {
+      if (route) await router.push(route)
+    } catch (e: any) {
+      const message = `Erro ao logar/cadastrar: ${e}`
+      showErrorMessage(message, e)
+    }
   }
   if (!route) {
     alert('Rota não encontrada!')

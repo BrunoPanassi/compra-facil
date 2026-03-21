@@ -14,7 +14,7 @@ export default defineNuxtRouteMiddleware((to) => {
     if (to.path === '/login') return navigateTo('/login');
   }
 
-  if (auth.user && auth.user.role == EnumRole.ADMIN && to.path === '/admin') {
+  if (auth.user?.role == EnumRole.ADMIN && to.path === '/admin') {
     return navigateTo('/admin')
   }
 });
