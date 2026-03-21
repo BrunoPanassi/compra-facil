@@ -57,6 +57,7 @@
       :location="$vuetify.display.mobile ? 'bottom' : undefined"
       temporary
     >
+      <v-progress-linear :indeterminate="loadingStore.getLoading()"></v-progress-linear>
       <v-list>
         <v-list-item
           v-for="(item, index) in menuFilteredByUserRole"
@@ -89,6 +90,7 @@
 import { EnumRole } from '~/types/Role';
 import { useAuthStore } from '@/stores/auth';
 import { useRouter } from 'vue-router';
+import { showErrorMessage } from '~/util/Util';
 
 const auth = useAuthStore();
 const route = useRoute();
@@ -100,9 +102,16 @@ const accountMenuItems = [
   { title: 'Deslogar' , icon: 'mdi-logout', func: logout}
 ]
 
-function logout() {
-  auth.logout()
-  router.push('/')
+async function logout() {
+  try {
+    loadingStore.updateLoading(true)
+    auth.logout()
+    await router.push('/')
+  } catch (e: any) {
+    showErrorMessage(`Erro ao deslogar: ${e}`, e)
+  } finally {
+    loadingStore.updateLoading(false)
+  }
 }
 
 const dialogBudgetList = ref(false)
@@ -144,8 +153,17 @@ const menuItems = [
 
 const menuFilteredByUserRole = computed(() => menuItems.filter(menu => auth.user?.role && menu.role.includes(auth.user?.role)))
 
-const goTo = (to: string) => {
-  router.push(`/${to}`)
+const loadingStore = useLoadingStore()
+
+const goTo = async (to: string) => {
+  try {
+    loadingStore.updateLoading(true)
+    await router.push(`/${to}`)
+  } catch (e: any) {
+    showErrorMessage(`Erro ao mudar de página: ${e}`, e)
+  } finally {
+    loadingStore.updateLoading(false)
+  }
 }
 
 </script>
