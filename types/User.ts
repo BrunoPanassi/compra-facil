@@ -7,3 +7,9 @@ export interface User {
   senha: string;
   role: Role;
 }
+
+export interface UserLocation {
+  latitude: number
+  longitude: number
+  accuracy: number
+}

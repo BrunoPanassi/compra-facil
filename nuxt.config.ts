@@ -18,8 +18,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     useSql: process.env.PRIVATE_USE_SQL,
     openStreetMapUrl: process.env.PRIVATE_OPENSTREETMAP_URL,
+    photonMapUrl: process.env.PRIVATE_PHOTON_URL,
     googleMapsUrl: process.env.PRIVATE_GOOGLEMAPS_URL,
     useGoogleMapsSearchAddress: process.env.PRIVATE_USE_GOOGLEMAPS_SEARCH_ADDRESS,
+    useOpenStreetMapSearchAddress: process.env.PRIVATE_USE_OPENSTREETMAP_SEARCH_ADDRESS,
+    usePhotonMapSearchAddress: process.env.PRIVATE_USE_PHOTON_SEARCH_ADDRESS,
     public: {
       useLeafletUI: process.env.PRIVATE_USE_LEAFLET_UI,
       jsonBinBaseUrl: process.env.JSONBIN_BASE_URL
