@@ -113,7 +113,6 @@ import { useBudgetStore } from "~/stores/budget";
 import type { Store } from "~/types/Store";
 
 const router = useRouter();
-const panel = ref([0])
 
 const budgetStore = useBudgetStore()
 
@@ -174,7 +173,7 @@ async function calculateBestStores() {
       )
 
       if (ps) {
-        totalPrice += parseFloat(ps.price)
+        totalPrice += Number.parseFloat(ps.price)
         foundProducts.push({...product, ...ps})
       } else {
         missingProducts.push(product)
