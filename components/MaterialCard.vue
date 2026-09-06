@@ -19,7 +19,7 @@
           label="Tipo de Material"
           class="mb-3"
         />
-
+        <v-text-field type="number" :rules="[onlyNumberRule]" @keydown="allowOnlyNumber" v-model.number="form.weight" label="Peso (kg)" required class="mb-3" />
         <v-row>
           <v-col cols="6" md="2">
             <v-btn class="mt-3" @click="resetForm">Fechar</v-btn>
@@ -39,21 +39,24 @@ import { useMaterialTypeStore } from '@/stores/materialType';
 import type { Material } from '@/types/Material';
 import { useMaterialStore } from '~/stores/material';
 import type { MaterialType } from '~/types/MaterialType';
+import { allowOnlyNumber, onlyNumberRule } from '~/util/rule';
 
 const materialStore = useMaterialStore();
 const materialTypeStore = useMaterialTypeStore();
 const register = ref(false);
 const editingId = ref<number | null>(null);
 
-const form = ref<Material>({
+const formReseted = {
   id: 0,
   name: '',
+  weight: 0,
   type_id: 1,
-});
+}
+
+const form = ref<Material>(formReseted);
 
 const headers = [
   { title: 'Nome', key: 'name' },
-  { title: 'Marca', key: 'brand' },
   { title: 'Peso', key: 'weight' },
   { title: 'Tipo', key: 'type' },
   { title: 'Ações', key: 'actions', sortable: false },
@@ -101,7 +104,7 @@ function deleteMaterial(id: number) {
 }
 
 function resetForm() {
-  form.value = { id: 0, name: '', type_id: 1 };
+  form.value = formReseted;
   editingId.value = null;
   register.value = false;
 }

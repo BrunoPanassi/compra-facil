@@ -12,7 +12,7 @@
     :multiple="multiple"
     hide-no-data
     auto-select-first="exact"
-    label="Selecione"
+    :label="label"
     variant="solo-filled"
     :disabled="disabled"
     @update:search="onSearch"
@@ -24,6 +24,7 @@
         v-bind="props"
         :prepend-avatar="item.raw.images[0]"
         :title="item.raw.name"
+        :subtitle="`${item.raw.brand}, ${item.raw.desc}`"
       >
       </v-list-item>
     </template>
@@ -41,12 +42,15 @@ const loading = ref(false);
 const productItems = ref<Product[]>();
 
 interface Props {
-  disabled: boolean,
+  disabled?: boolean,
   multiple: boolean,
+  label: string,
   product?: Product,
 }
 
-const props = defineProps<Props>()
+const props = withDefaults(defineProps<Props>(), {
+  disabled: false
+})
 
 const disabled = toRef(() => props.disabled);
 const product = toRef(() => props.product)
@@ -86,7 +90,7 @@ const emit = defineEmits(['onSearch', 'onSelect', 'onClear'])
 function onSearch(val: string) {
   page = 1;
   fetchProducts(val);
-  debounce(() => emit('onSearch', val), 500)
+  emit('onSearch', val)
 }
 
 function onClear() {

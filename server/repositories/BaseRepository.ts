@@ -1,11 +1,18 @@
 import { SqlAdapter } from '@/server/adapters/SqlAdapter';
 import { JSONBinAdapter } from '../adapters/JSONBinAdapter';
+import type { RepositoryAdapter } from '../adapters/RepositoryAdapter';
+import { useRuntimeConfig } from '#imports';
+
+function isSqlEnabled(value: unknown): boolean {
+    return value === true || (typeof value === 'string' && value.toLowerCase() === 'true');
+}
 
 export class BaseRepository<T extends { id: number }> {
-    protected adapter: JSONBinAdapter<T> | SqlAdapter<T>;
+    protected adapter: RepositoryAdapter<T>;
 
-    constructor(entityName: string, useSql: boolean = false) {
-        this.adapter = useSql
+    constructor(entityName: string, useSql?: boolean) {
+        const sqlEnabled = useSql ?? isSqlEnabled(useRuntimeConfig().useSql);
+        this.adapter = sqlEnabled
             ? new SqlAdapter<T>(entityName)
             : new JSONBinAdapter<T>(entityName);
     }

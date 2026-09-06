@@ -16,7 +16,7 @@ export default defineNuxtConfig({
     },
   },
   runtimeConfig: {
-    useSql: process.env.PRIVATE_USE_SQL,
+    useSql: process.env.NUXT_USE_SQL ?? process.env.PRIVATE_USE_SQL ?? "false",
     databaseUrl: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL,
     openStreetMapUrl: process.env.PRIVATE_OPENSTREETMAP_URL,
     photonMapUrl: process.env.PRIVATE_PHOTON_URL,

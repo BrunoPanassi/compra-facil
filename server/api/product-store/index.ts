@@ -8,8 +8,8 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'GET') {
     const query = getQuery(event);
-    const page = parseInt(query.page as string || '1');
-    const perPage = parseInt(query.perPage as string || '10');
+    const page = Number.parseInt(query.page as string || '1');
+    const perPage = Number.parseInt(query.perPage as string || '10');
     const search = (query.search as string) || '';
     const prop = (query.prop as string) || 'name';
     if (page && perPage && search && prop) {
@@ -20,10 +20,10 @@ export default defineEventHandler(async (event) => {
 
     const ids = (query.ids as number[])
     if (ids?.length) {
-      return await service.getByIds(ids)
+      return await service.getByIds([...ids])
     }
 
-    const id = parseInt(query.id as string)
+    const id = Number.parseInt(query.id as string)
     if (id) {
       return await service.findById(id)
     }

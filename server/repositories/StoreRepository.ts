@@ -3,7 +3,7 @@ import { BaseRepository } from './BaseRepository';
 
 export class StoreRepository extends BaseRepository<Store>{
 
-  constructor(useSql: boolean = false) {
+  constructor(useSql?: boolean) {
     super('stores', useSql)
   }
 

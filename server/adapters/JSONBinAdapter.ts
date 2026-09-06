@@ -1,4 +1,6 @@
-export class JSONBinAdapter<T extends { id: number }> {
+import type { RepositoryAdapter } from './RepositoryAdapter';
+
+export class JSONBinAdapter<T extends { id: number }> implements RepositoryAdapter<T> {
     private readonly binId: string;
     private baseUrl = "";
     private apiKey = "";

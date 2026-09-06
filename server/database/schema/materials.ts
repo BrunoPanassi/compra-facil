@@ -6,7 +6,6 @@ export const materials = pgTable(
   {
     id: serial('id').primaryKey(),
     name: text('name').notNull(),
-    brand: text('brand'),
     weight: numeric('weight', { precision: 12, scale: 3 }),
     typeId: integer('type_id')
       .notNull()

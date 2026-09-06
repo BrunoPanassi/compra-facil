@@ -4,7 +4,7 @@ import type { Product } from '~/types/Product';
 
 export class ProductRepository extends BaseRepository<Product> implements DataAdapter<Product>{
 
-  constructor(useSql: boolean = false) {
+  constructor(useSql?: boolean) {
     super('products', useSql)
   }
 

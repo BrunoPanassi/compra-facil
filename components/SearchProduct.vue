@@ -5,6 +5,7 @@
         Produtos
       </v-card-title>
       <ProductCombobox 
+        label="Selecione"
         :disabled="false"
         :multiple="true"
         @on-select="onProductSelect"

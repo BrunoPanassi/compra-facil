@@ -3,7 +3,7 @@ import { ProductStoreService } from "~/server/services/ProductStoreService";
 export default defineEventHandler(async (event) => {
     const query = getQuery(event)
 
-    const store_id = parseInt(query.store_id as string)
+    const store_id = Number.parseInt(query.store_id as string)
     if (typeof store_id !== 'number' || !store_id) {
         return {
         statusCode: 400,

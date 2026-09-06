@@ -1,6 +1,6 @@
 <template>
   <CrudCard
-    title="Produtos"
+    title="Produtos/Loja"
     :headers="headers"
     :items="productStoreDataTable"
     v-model="register"
@@ -29,26 +29,48 @@
         class="mb-3"
       />
       <v-form ref="formRef" @submit.prevent="handleSubmit" validate-on="input">
+        <span class="text-caption">Pesquise se o produto já se encontra cadastrado:</span>
         <ProductCombobox
           :multiple="false"
+          label="Produto"
           :product="selectedProduct"
-          :disabled="!isStoreSelected"
-          @on-search="onProductSearch"
+          clearable
           @on-select="onProductSelect"
           @on-clear="onProductClear"
         />
+        <span class="text-caption">Caso contrário, cadastre o nome dele:</span>
+        <v-text-field 
+          v-model="searchText" 
+          label="Nome"
+          :disabled="!isStoreSelected || !!selectedProduct"
+        >
+        </v-text-field>
         <v-select
           v-model="form.material_id"
           :disabled="isProductSelectedOrStoreNotSelected"
           :items="materialTypes"
           label="Material"
           hide-selected
-          item-title="name"
           item-value="id"
           class="mb-3"
           :rules="[requiredRule]"
           required
-        />
+        >
+          <template #selection="{ item }">
+            <div v-if="item.raw.weight">
+              {{ item.raw.name }} - {{ `${item.raw.weight}(kg)` }}
+            </div>
+          </template>
+
+          <!-- Customizes the dropdown menu items -->
+          <template #item="{ props, item }">
+            <v-list-item v-bind="props">
+              <template #title>
+                <strong>{{ item.raw.name }}</strong> - {{ `${item.raw.weight}(kg)` }}
+              </template>
+            </v-list-item>
+          </template>
+        </v-select>
         <v-text-field v-model="form.brand" :disabled="isProductSelectedOrStoreNotSelected" :rules="[requiredRule]" label="Marca" required class="mb-3" />
         <v-textarea v-model="form.desc" :disabled="isProductSelectedOrStoreNotSelected" label="Descrição" class="mb-3"></v-textarea>
 
@@ -102,7 +124,7 @@
           class="mb-3"
           :rules="[requiredRule]"
         />
-
+        <v-alert v-if="error" type="error" class="mt-3">{{ error }}</v-alert>
         <!-- Botões -->
         <v-row>
           <v-col cols="6" md="2">
@@ -133,6 +155,7 @@ const productStoreStore = useProductStoreStore()
 
 const register = ref(false);
 const editingId = ref<number | null>(null);
+const searchText = ref<string>();
 const productItems = ref<Product[]>();
 
 let page = 1; // TODO por enquanto 1, mas podemos implementar scroll infinito depois
@@ -163,7 +186,7 @@ const headers = [
   { title: 'Ações', key: 'actions', sortable: false }
 ];
 
-const materialTypes = computed(() => [{ id: 0, name: ''}, ...materialStore.items]);
+const materialTypes = computed(() => [{ id: 0, name: '', weight: 0}, ...materialStore.items]);
 
 onMounted(async () => {
   initStores();
@@ -172,11 +195,6 @@ onMounted(async () => {
 async function initStores() {
   await materialStore.fetch();
   await storeStore.fetch();
-}
-
-const searchText = ref<string>();
-function onProductSearch(text: string) {
-  searchText.value = text
 }
 
 const selectedProduct = ref<Product>();
@@ -272,9 +290,14 @@ function handleEditProduct() {
   }
 }
 
+const error = ref('')
 async function handleSubmitProductAndStore() {
   const { valid } = await formRef.value.validate()
   if (valid) {
+    if (!selectedProduct.value && !searchText.value) {
+      error.value = "O nome do produto deve ser informado!"
+      return
+    }
     if (selectedProduct.value?.id && storeSelected.value) {
       await productStoreStore.add(
         { 
@@ -301,6 +324,7 @@ async function handleSubmitProductAndStore() {
     }
     closeModal()
     resetForm()
+    onStoreSelect()
   }
 }
 
@@ -314,6 +338,7 @@ function editProduct(prodStor: ProductStoreDataTable) {
 
 function deleteProduct(id: number) {
   productStoreStore.delete(id);
+  onStoreSelect()
 }
 
 function closeModal() {
