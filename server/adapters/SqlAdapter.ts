@@ -1,4 +1,7 @@
-import { asc, eq, inArray } from 'drizzle-orm';
+import type { Options, Response } from '../../types/Paginated';
+import { normalizePagination } from '../utils/pagination';
+import { paginationFilter } from '../database/queries/pagination';
+import { asc, count, eq, inArray } from 'drizzle-orm';
 import { getDatabase } from '../database/client';
 import { getEntityMapping } from '../database/entity-map';
 import type { RepositoryAdapter } from './RepositoryAdapter';
@@ -6,7 +9,7 @@ import type { RepositoryAdapter } from './RepositoryAdapter';
 export class SqlAdapter<T extends { id: number }> implements RepositoryAdapter<T> {
   private readonly mapping;
 
-  constructor(entityName: string) {
+  constructor(private readonly entityName: string) {
     this.mapping = getEntityMapping(entityName);
   }
 
@@ -18,6 +21,18 @@ export class SqlAdapter<T extends { id: number }> implements RepositoryAdapter<T
 
   private fromDatabase(record: Record<string, unknown>): T {
     return this.mapping.fromDatabase(record) as T;
+  }
+
+  async getPaginated(options: Options): Promise<Response<T>> {
+    const { prop, search, perPage, offset } = normalizePagination(options);
+    const filter = paginationFilter(this.entityName, prop, search);
+    const db = getDatabase();
+    const [totals, rows] = await Promise.all([
+      db.select({ total: count() }).from(this.mapping.table).where(filter),
+      db.select().from(this.mapping.table).where(filter)
+        .orderBy(asc(this.mapping.table.id)).limit(perPage).offset(offset),
+    ]);
+    return { items: rows.map(row => this.fromDatabase(row)), total: totals[0].total };
   }
 
   async getAll(): Promise<T[]> {

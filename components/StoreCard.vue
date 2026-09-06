@@ -31,7 +31,7 @@
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
-            <v-text-field v-model.number="form.zip" v-maska="'########'" label="CEP" class="mb-3" @blur="fetchAddressByZip" />
+            <v-text-field v-model.number="form.zip" v-maska="'########'" label="CEP" class="mb-3"/>
             <v-text-field v-model="form.street" label="Rua" class="mb-2" />
             <v-text-field v-model.number="form.nr" label="Número" class="mb-2" />
             <v-text-field v-model="form.neighbr" label="Bairro" class="mb-2" />
@@ -97,12 +97,19 @@ import type { Store } from '~/types/Store';
 import { vMaska } from 'maska/vue';
 import type { ViaCepResponse } from '~/types/ViaCEPResponse';
 import ConfirmDialog from './ConfirmDialog.vue';
+import { AddressCoordinates } from '~/types/Address.js';
+import { debounce } from 'lodash-es';
 
 const panel = ref([0])
 
-function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
-  form.value.lat = coords.lat
-  form.value.lon = coords.lon
+function onDestinationSelect(addressCoordinates: AddressCoordinates) {
+  const { coordinates, address } = addressCoordinates
+  form.value.lat = coordinates.lat
+  form.value.lon = coordinates.lon
+  if (address) {
+    const postCode = address.postcode.includes("-") ? address.postcode.replace("-", "") : address.postcode
+    form.value.zip = Number(postCode)
+  }
 }
 
 const store = useStoreStore();
@@ -222,6 +229,14 @@ function resetForm() {
   editingId.value = null;
   register.value = !register.value
 }
+
+watch(() => form.value.zip, () => {
+  if (form.value.zip && form.value.zip.toString().length >= 8) {
+    setTimeout(() => {
+      fetchAddressByZip()
+    }, 600);
+  }
+})
 </script>
 
 <style scoped>

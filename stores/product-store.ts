@@ -1,5 +1,5 @@
 import type { Options, Response } from "~/types/Paginated";
-import type { ProductStore } from "~/types/ProductStore";
+import type { ProductStore, ProductStoreWithProduct } from "~/types/ProductStore";
 import { showErrorMessage } from '~/util/Util';
 
 const entity = 'product-store'
@@ -50,7 +50,7 @@ export const useProductStoreStore = defineStore(entity, {
             return { items: data, total: data.length}
         },
         async byStore(storeId: number) {
-            const data = await $fetch<ProductStore[]>(`/api/${entity}/store`, {
+            const data = await $fetch<ProductStoreWithProduct[]>(`/api/${entity}/store`, {
                 query: {
                     store_id: storeId
                 }

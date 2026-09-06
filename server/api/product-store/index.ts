@@ -8,11 +8,11 @@ export default defineEventHandler(async (event) => {
 
   if (method === 'GET') {
     const query = getQuery(event);
-    const page = Number.parseInt(query.page as string || '1');
-    const perPage = Number.parseInt(query.perPage as string || '10');
-    const search = (query.search as string) || '';
-    const prop = (query.prop as string) || 'name';
-    if (page && perPage && search && prop) {
+    const page = query.page === undefined ? 1 : Number(query.page);
+    const perPage = query.perPage === undefined ? 10 : Number(query.perPage);
+    const search = query.search === undefined ? '' : query.search as string;
+    const prop = query.prop === undefined ? 'name' : query.prop as string;
+    if (query.prop || query.page !== undefined || query.perPage !== undefined || query.search !== undefined) {
       return await service.getPaginated({
         prop, search, page, perPage
       });

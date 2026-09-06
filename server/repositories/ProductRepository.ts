@@ -1,4 +1,6 @@
-import type { DataAdapter } from '~/types/Paginated';
+import { normalizePagination } from '../utils/pagination';
+import { searchableProperties } from '../database/queries/pagination';
+import type { DataAdapter, Options } from '~/types/Paginated';
 import { BaseRepository } from './BaseRepository';
 import type { Product } from '~/types/Product';
 
@@ -8,15 +10,12 @@ export class ProductRepository extends BaseRepository<Product> implements DataAd
     super('products', useSql)
   }
 
-  async getPaginated({
-    prop = 'name',
-    search = '',
-    page = 1,
-    perPage = 10
-  }) {
+  async getPaginated(options: Options) {
+    const { prop, search, page, perPage } = normalizePagination(options);
+    if (this.adapter.getPaginated) return this.adapter.getPaginated(options);
     const data = await this.getAll()
-    const filtered = search ? 
-      data.filter(d => 
+    const filtered = search ?
+      data.filter(d => searchableProperties['products'].includes(prop) &&
         (d[prop]?.toString().toLowerCase() || '').includes(search?.toLowerCase()))
       : data
 

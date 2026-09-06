@@ -8,6 +8,7 @@
       v-model="query"
       v-model:search="search"
       :items="results"
+      :loading="inputLoading"
       hide-selected
       item-value="id"
       item-title="name"
@@ -32,6 +33,7 @@ import { ref } from 'vue';
 import { SearchAddress } from '~/server/services/SearchAddress';
 import { useGeolocation } from '~/server/services/UserLocationService';
 import { debounce } from 'lodash-es';
+import { Address, Coordinates, AddressCoordinates } from '~/types/Address';
 
 const {
   location,
@@ -61,20 +63,13 @@ const loadLocation = async () => {
 }
 
 const emit = defineEmits<{
-  (e: 'select', coords: { lat: number; lon: number; display_name: string }): void;
+  (e: 'select', addressCoordinates: AddressCoordinates): void;
 }>();
-
-interface Address {
-  id: number, 
-  name: string,
-  lat: number,
-  lon: number
-}
 
 const query = ref('') as any;
 const search = ref('')
 const results = ref<Array<Address>>();
-const selectedCoords = ref<{ lat: number; lon: number; display_name: string }>({
+const selectedCoords = ref<Coordinates>({
   lat: 0,
   lon: 0,
   display_name: ''
@@ -84,6 +79,7 @@ let controller: AbortController | null = null;
 
 const searchAddress = new SearchAddress();
 
+const inputLoading = ref(false)
 const onInput = debounce(async (value: string) => {
   if (!value || value.length < 3) {
     results.value = [];
@@ -91,6 +87,7 @@ const onInput = debounce(async (value: string) => {
   }
 
   try {
+    inputLoading.value = true
     const url = await searchAddress.getUrl(value)
 
     const res = await $fetch(url.url, {
@@ -109,7 +106,12 @@ const onInput = debounce(async (value: string) => {
         id: properties.osm_id,
         name: `${properties.name}, ${properties.city}, ${properties.state} - ${properties.postcode}`,
         lat,
-        lon
+        lon,
+        postcode: properties.postcode,
+        district: properties.district,
+        street: properties.name,
+        city: properties.city,
+        state: properties.state
       }
     })
   } catch (error: any) {
@@ -119,6 +121,8 @@ const onInput = debounce(async (value: string) => {
 
     console.error('Erro ao buscar endereço:', error)
     results.value = []
+  } finally {
+    inputLoading.value = false
   }
 }, 600)
 
@@ -131,7 +135,10 @@ function pickAddress(item: Address) {
     };
     results.value = [];
     query.value = item.name;
-    emit('select', selectedCoords.value);
+    emit('select', {
+      address: item,
+      coordinates: selectedCoords.value
+    });
   }
 }
 
@@ -148,7 +155,10 @@ watch(() => location.value, () => {
       display_name: "Atual localização"
     };
     results.value = [];
-    emit('select', selectedCoords.value);
+    emit('select', {
+      address: null,
+      coordinates: selectedCoords.value
+    });
   }
 }, { immediate: true})
 

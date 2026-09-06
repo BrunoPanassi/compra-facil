@@ -39,3 +39,6 @@ export interface BestStoreResult {
   missingProducts: Product[];
   score: number;
 }
+export interface ProductStoreWithProduct extends ProductStore {
+  product: Product;
+}

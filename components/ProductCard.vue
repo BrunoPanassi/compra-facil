@@ -217,33 +217,21 @@ function onProductClear() {
 const storeSelected = ref<number>();
 const productStoreDataTable = ref<ProductStoreDataTable[]>()
 const loading = ref(false);
+let storeRequest = 0;
 async function onStoreSelect() {
-  if (storeSelected.value) {
-    const { items } = await productStoreStore.byStore(storeSelected.value)
-    if (items.length) {
-
-      const productIds = items.map(prodStore => prodStore.id_product)
-      loading.value = true;
-      const products = await productStore.fetch({
-        prop: '',
-        ids: productIds.join(',')
-      })
-      loading.value = false;
-
-      productStoreDataTable.value = products.items
-          .map(prod => {
-            const prodStor = items.find(prodStor => prodStor.id_product == prod.id)
-            return {
-              id: prodStor?.id || 0,
-              id_store: prodStor?.id_store || 0,
-              product: prod,
-              price: prodStor?.price || '',
-              quantity: prodStor?.quantity || 0
-            }
-          })
-    } else {
-      productStoreDataTable.value = []
-    }
+  const request = ++storeRequest;
+  const storeId = storeSelected.value;
+  productStoreDataTable.value = [];
+  loading.value = !!storeId;
+  error.value = '';
+  if (!storeId) return;
+  try {
+    const { items } = await productStoreStore.byStore(storeId);
+    if (request === storeRequest && storeSelected.value === storeId) productStoreDataTable.value = items;
+  } catch {
+    if (request === storeRequest) error.value = 'Falha ao carregar os produtos da loja.';
+  } finally {
+    if (request === storeRequest) loading.value = false;
   }
 }
 
