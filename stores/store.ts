@@ -4,9 +4,27 @@ import { showErrorMessage } from '~/util/Util';
 const entity = 'store'
 const label = 'Loja'
 
+const plainStoreValue = {
+  id: 0,
+  name: '',
+  street: '',
+  nr: null,
+  neighbr: '',
+  city: '',
+  state: '',
+  zip: null,
+  lat: 0,
+  lon: 0,
+  owner_id: 0,
+  description: '',
+  cellphone: 0,
+  email: ''
+}
+
 export const useStoreStore = defineStore(entity, {
     state: () => ({
-        items: [] as Array<Store>
+        items: [] as Array<Store>,
+        storeSelected: plainStoreValue as Store
     }),
     actions: {
         async fetch() {
@@ -39,11 +57,20 @@ export const useStoreStore = defineStore(entity, {
                 method: 'DELETE'
             });
             this.items = this.items.filter(s => s.id !== id);
+        },
+        setStoreSelected(store: Store) {
+            this.storeSelected = store
+        },
+        unselectStore() {
+            this.storeSelected = plainStoreValue
         }
     },
     getters: {
         byOwner: (state) => {
             return (userId: number) => state.items?.filter(store => store.owner_id == userId)
+        },
+        getPlainStore: () => {
+            return plainStoreValue
         }
     }
 })

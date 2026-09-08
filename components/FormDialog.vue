@@ -11,7 +11,7 @@
             <v-btn density="compact" class="mt-1" elevation="4" @click="toggleDialog"><v-icon>mdi-close</v-icon></v-btn>
         </v-card-title>
         <v-card-text>
-            <v-form @submit.prevent="handleSubmit">
+            <v-form ref="form" @submit.prevent="handleSubmit">
                 <slot name="card-text"></slot>
                 <v-row>
                     <v-col cols="6" md="2" lg="2" xl="2">
@@ -34,7 +34,11 @@ const props = defineProps({
 })
 const emit = defineEmits(['resetForm', 'handleSubmit', 'update:modelValue'])
 
-const handleSubmit = () => { emit('handleSubmit')}
+const form = ref()
+const handleSubmit = async () => {
+    const { valid } = await form.value.validate()
+    emit('handleSubmit', valid)
+}
 const resetForm = () => { emit('resetForm')}
 const toggleDialog = () => { emit('update:modelValue', false)}
 

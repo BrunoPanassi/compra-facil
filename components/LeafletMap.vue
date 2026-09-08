@@ -1,8 +1,8 @@
 <template>
     <LMap
-      v-if="props.selectedCoords"
+      v-if="selectedCoords"
       ref="lmapRef"
-      :center="[props.selectedCoords.lat, props.selectedCoords.lon]"
+      :center="[latitude, longitude]"
       :zoom="14"
       style="height: 300px; margin-top: 12px"
       :use-global-leaflet="false"
@@ -26,6 +26,11 @@ interface Props {
 }
 
 const props = defineProps<Props>()
+const emit = defineEmits(['onMapClick'])
+
+const selectedCoords = toRef(props.selectedCoords)
+
+const store = useStoreStore()
 
 const latitude = ref()
 const longitude = ref()
@@ -38,10 +43,16 @@ watch(
   }, { immediate: true}
 )
 
+watch(() => store.storeSelected, () => {
+  latitude.value = store.storeSelected.lat
+  longitude.value = store.storeSelected.lon
+}, { immediate: true})
+
 function onMapClick(e: any) {
   const { lat, lng} = e.latlng
   latitude.value = lat
   longitude.value = lng
+  emit('onMapClick', { lat: lat, lon: lng})
 }
 
 </script>

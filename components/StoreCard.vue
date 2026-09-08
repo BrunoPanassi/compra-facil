@@ -9,7 +9,7 @@
           density="compact"
           elevation="4" 
           class="ml-3" 
-          @click="register = !register"
+          @click="onNew"
         >
           <v-icon>mdi-plus</v-icon>
         </v-btn>
@@ -18,26 +18,32 @@
           v-model="register" 
           :title="'Lojas'" 
           @handle-submit="handleSubmit"
-          @reset-form="resetForm"
-          @toggle-dialog="register = !register"
+          @reset-form="onResetForm"
+          @toggle-dialog="toggleRegister"
         >
           <template #card-text>
-            <v-text-field v-model="form.name" label="Nome da Loja" required class="mb-3" />
-            <v-text-field v-model="form.description" label="Descrição" required class="mb-3" />
+            <v-text-field v-model="form.name" label="Nome da Loja" :rules="[requiredRule]" class="mb-3" />
+            <v-text-field v-model="form.description" label="Descrição" :rules="[requiredRule]" class="mb-3" />
             <v-expansion-panels v-model="panel">
               <v-expansion-panel title="Destino">
                 <v-expansion-panel-text>
-                  <AddressPicker @select="onDestinationSelect" />
+                  <AddressPicker
+                    :get-user-location="false"
+                    :lat="form.lat"
+                    :lon="form.lon"
+                    :display-name="getDisplayName"
+                    @select="onDestinationSelect" 
+                  />
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
-            <v-text-field v-model.number="form.zip" v-maska="'########'" label="CEP" class="mb-3"/>
-            <v-text-field v-model="form.street" label="Rua" class="mb-2" />
-            <v-text-field v-model.number="form.nr" label="Número" class="mb-2" />
-            <v-text-field v-model="form.neighbr" label="Bairro" class="mb-2" />
-            <v-text-field v-model="form.city" label="Cidade" class="mb-2" />
-            <v-text-field v-model="form.state" label="Estado" class="mb-2" />
-            <v-text-field v-model.number="form.cellphone" label="Telefone" class="mb-2" />
+            <v-text-field v-model.number="form.zip" :rules="[requiredRule]" v-maska="'########'" label="CEP" class="mb-3"/>
+            <v-text-field v-model="form.street" :rules="[requiredRule]" label="Rua" class="mb-2" />
+            <v-text-field v-model.number="form.nr" :rules="[requiredRule]" label="Número" class="mb-2" />
+            <v-text-field v-model="form.neighbr" :rules="[requiredRule]" label="Bairro" class="mb-2" />
+            <v-text-field v-model="form.city" :rules="[requiredRule]" label="Cidade" class="mb-2" />
+            <v-text-field v-model="form.state" :rules="[requiredRule]" label="Estado" class="mb-2" />
+            <v-text-field v-model.number="form.cellphone"  :rules="[requiredRule]" label="Telefone" class="mb-2" />
             <v-text-field v-model="form.email" label="Email" class="mb-2" />
           </template>
         </FormDialog>
@@ -75,7 +81,7 @@
       <v-data-table 
         :mobile="$vuetify.display.mobile" 
         :headers="headers" 
-        :items="store.items"  
+        :items="storeStore.items"  
         item-value="id" 
         class="elevation-1"
       >
@@ -98,7 +104,7 @@ import { vMaska } from 'maska/vue';
 import type { ViaCepResponse } from '~/types/ViaCEPResponse';
 import ConfirmDialog from './ConfirmDialog.vue';
 import { AddressCoordinates } from '~/types/Address.js';
-import { debounce } from 'lodash-es';
+import { requiredRule } from '~/util/rule.js';
 
 const panel = ref([0])
 
@@ -112,7 +118,7 @@ function onDestinationSelect(addressCoordinates: AddressCoordinates) {
   }
 }
 
-const store = useStoreStore();
+const storeStore = useStoreStore();
 const authStore = useAuthStore()
 const editingId = ref<number | null>(null);
 
@@ -144,8 +150,17 @@ const headers = [
 ];
 
 onMounted(() => {
-  store.fetch();
+  storeStore.fetch();
 });
+
+function onNew() {
+  resetForm()
+  toggleRegister()
+}
+
+function toggleRegister() {
+  register.value = !register.value
+}
 
 function setUserOnForm() {
   if (authStore.getId()) {
@@ -153,34 +168,45 @@ function setUserOnForm() {
   }
 }
 
-async function handleSubmit() {
-  setUserOnForm()
-  if (editingId.value !== null) {
-    await store.update({ ...form.value });
-    editingId.value = null;
-  } else {
-    await store.add({ ...form.value });
+async function handleSubmit(valid: boolean) {
+  if (valid) {
+    setUserOnForm()
+    if (editingId.value !== null) {
+      await storeStore.update({ ...form.value });
+      editingId.value = null;
+    } else {
+      await storeStore.add({ ...form.value });
+    }
+    onResetForm();
   }
-  resetForm();
 }
 
-async function fetchAddressByZip() {
-  const cepOnlyDigits = form.value.zip.toString().replace(/\D/g, '');
-  if (cepOnlyDigits.length === 8) {
-    try {
-      const { data, error } = await useFetch<ViaCepResponse>(`/api/via-cep/${form.value.zip}`);
-      if (error.value) {
-        alert('Erro ao buscar o CEP');
-        return;
-      }
+const getDisplayName = computed(() => {
+  if (form.value.street && form.value.zip) {
+    return form.value.street.concat(' '.concat(form.value.zip.toString()))
+  }
+  return ""
+})
 
-      form.value.street = data.value?.logradouro ?? '';
-      form.value.neighbr = data.value?.bairro ?? '';
-      form.value.city = data.value?.localidade ?? '';
-      form.value.state = data.value?.uf ?? '';
-      form.value.zip = Number(cepOnlyDigits)
-    } catch {
-      alert('Falha inesperada ao buscar endereço');
+async function fetchAddressByZip() {
+  if (form.value.zip) {
+    const cepOnlyDigits = form.value.zip.toString().replace(/\D/g, '');
+    if (cepOnlyDigits.length === 8) {
+      try {
+        const { data, error } = await useFetch<ViaCepResponse>(`/api/via-cep/${form.value.zip}`);
+        if (error.value) {
+          alert('Erro ao buscar o CEP');
+          return;
+        }
+
+        form.value.street = data.value?.logradouro ?? '';
+        form.value.neighbr = data.value?.bairro ?? '';
+        form.value.city = data.value?.localidade ?? '';
+        form.value.state = data.value?.uf ?? '';
+        form.value.zip = Number(cepOnlyDigits)
+      } catch {
+        alert('Falha inesperada ao buscar endereço');
+      }
     }
   }
 }
@@ -188,7 +214,7 @@ async function fetchAddressByZip() {
 
 function confirmDelete(confirm: boolean) {
   if (confirm && deletingItem.value?.id) {
-    store.delete(deletingItem.value.id);
+    storeStore.delete(deletingItem.value.id);
   }
   deleteDialog.value = !deleteDialog.value
   deletingItem.value = null;
@@ -196,8 +222,10 @@ function confirmDelete(confirm: boolean) {
 
 function onEdit(store: Store) {
   form.value = JSON.parse(JSON.stringify(store));
+  storeStore.setStoreSelected(store)
+
   editingId.value = store.id;
-  register.value = !register.value
+  toggleRegister()
 }
 
 function onDelete(item: Store) {
@@ -210,24 +238,24 @@ function resetForm() {
     id: 0,
     name: '',
     street: '',
-    nr: 0,
+    nr: null,
     neighbr: '',
     city: '',
     state: '',
-    zip: 0,
+    zip: null,
     lat: 0,
     lon: 0,
     owner_id: 0,
     description: '',
-    cellphone: 0,
-    cellphone_second: 0,
-    email: '',
-    facebook: '',
-    instagram: '',
-    another: '',
-  };
+    cellphone: null,
+    email: ''
+  }
+}
+
+function onResetForm() {
+  resetForm()
   editingId.value = null;
-  register.value = !register.value
+  toggleRegister()
 }
 
 watch(() => form.value.zip, () => {
@@ -235,6 +263,12 @@ watch(() => form.value.zip, () => {
     setTimeout(() => {
       fetchAddressByZip()
     }, 600);
+  }
+})
+
+watch(() => register.value, () => {
+  if (!register.value) {
+    storeStore.unselectStore()
   }
 })
 </script>

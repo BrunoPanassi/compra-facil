@@ -2,16 +2,16 @@ export interface Store {
   id: number;
   name: string;
   street: string;
-  nr: number;
+  nr: number|null;
   neighbr: string;
   city: string;
   state: string;
-  zip: number;
+  zip: number|null;
   lat: number,
   lon: number,
   owner_id: number;
   description: string;
-  cellphone: number;
+  cellphone: number|null;
   cellphone_second?: number;
   email: string;
   facebook?: string;

@@ -74,7 +74,7 @@
         <v-text-field v-model="form.brand" :disabled="isProductSelectedOrStoreNotSelected" :rules="[requiredRule]" label="Marca" required class="mb-3" />
         <v-textarea v-model="form.desc" :disabled="isProductSelectedOrStoreNotSelected" label="Descrição" class="mb-3"></v-textarea>
 
-        <v-card>
+        <v-card v-show="false"> <!--TODO show selection images again when fixed-->
           <v-card-subtitle>
             Imagens
           </v-card-subtitle>

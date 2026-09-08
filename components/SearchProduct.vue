@@ -112,6 +112,7 @@ import SelectedProductList from '@/components/SelectedProductList.vue'
 import type { ProductStore, ProdutStoreProductDetail, BestStoreResult } from "~/types/ProductStore";
 import { useBudgetStore } from "~/stores/budget";
 import type { Store } from "~/types/Store";
+import { AddressCoordinates } from "~/types/Address";
 
 const router = useRouter();
 
@@ -126,9 +127,10 @@ function toggleShowResults() {
   showResults.value = !showResults.value;
 }
 
-function onDestinationSelect(coords: { lat: number; lon: number; display_name: string }) {
-  destinationCoords.value = coords;
-  console.log("Destino selecionado:", coords);
+function onDestinationSelect(addressCoordinates: AddressCoordinates) {
+  const { coordinates } = addressCoordinates
+  destinationCoords.value = coordinates;
+  console.log("Destino selecionado:", coordinates);
 }
 
 const selectedProducts = ref<Product[]>();

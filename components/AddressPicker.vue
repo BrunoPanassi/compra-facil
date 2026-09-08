@@ -10,12 +10,12 @@
       :items="results"
       :loading="inputLoading"
       hide-selected
+      hide-no-data
       item-value="id"
       item-title="name"
       return-object
       clearable
       no-filter
-      auto-select-first="exact"
       variant="solo-filled"
       label="Pesquise por um endereço"
       @update:model-value="pickAddress"
@@ -24,7 +24,7 @@
     <!-- Campo de busca com autocomplete -->
 
     <!-- Mapa Leaflet com marcação dos coords selecionados -->
-    <MapUI :selected-coords="selectedCoords"/>
+    <MapUI :selected-coords="selectedCoords" @on-map-click="onMapClick"/>
   </div>
 </template>
 
@@ -43,19 +43,49 @@ const {
   loadStoredLocation
 } = useGeolocation()
 
+const props = defineProps({
+  getUserLocation: {
+    type: Boolean,
+    default: true
+  },
+  lat: {
+    type: Number,
+    required: false
+  },
+  lon: {
+    type: Number,
+    required: false
+  },
+  displayName: {
+    type: String,
+    required: false
+  }
+})
+
+const setPropsLatitudeLongitude = () => {
+  if (!!props.lat?.toString() && !!props.lon?.toString()) {
+    selectedCoords.value.lat = Number.parseFloat(props.lat.toString())
+    selectedCoords.value.lon = Number.parseFloat(props.lon.toString())
+    selectedCoords.value.display_name = props?.displayName ?? ""
+    query.value = props?.displayName ?? ""
+  }
+}
+
 onMounted(async () => {
+  if (props.getUserLocation) {
+    // Primeiro tenta recuperar a localização salva
+    const storedLocation = loadStoredLocation()
 
-  // Primeiro tenta recuperar a localização salva
-  const storedLocation = loadStoredLocation()
+    if (storedLocation) {
+      return
+    }
 
-  if (storedLocation) {
-    return
+    // Não existe localização salva.
+    // Solicita permissão ao navegador.
+    await getLocation()
   }
 
-  // Não existe localização salva.
-  // Solicita permissão ao navegador.
-  await getLocation()
-
+  setPropsLatitudeLongitude()
 })
 
 const loadLocation = async () => {
@@ -66,8 +96,8 @@ const emit = defineEmits<{
   (e: 'select', addressCoordinates: AddressCoordinates): void;
 }>();
 
-const query = ref('') as any;
-const search = ref('')
+const query = ref(null) as any;
+const search = ref()
 const results = ref<Array<Address>>();
 const selectedCoords = ref<Coordinates>({
   lat: 0,
@@ -125,6 +155,18 @@ const onInput = debounce(async (value: string) => {
     inputLoading.value = false
   }
 }, 600)
+
+function onMapClick(latLon: { lat: number, lon: number}) {
+  const { lat, lon } = latLon
+  if (lat && lon) {
+    selectedCoords.value.lat = lat
+    selectedCoords.value.lon = lon
+    emit('select', {
+      address: null,
+      coordinates: selectedCoords.value
+    });
+  }
+}
 
 function pickAddress(item: Address) {
   if (item) {
