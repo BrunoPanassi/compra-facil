@@ -1,6 +1,6 @@
 export interface Material {
   id: number;
   name: string;
-  weight: number;
+  weight: number | null;
   type_id: number;
 }

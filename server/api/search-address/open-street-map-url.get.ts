@@ -1,6 +1,7 @@
+import { apiHandler } from '~/server/utils/api-handler';
 import { OpenStreetMapService } from "~/server/services/OpenStreetMapService";
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
     const query = getQuery(event)
 
     const search = query.search as string

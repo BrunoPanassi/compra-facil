@@ -1,3 +1,11 @@
+-- Execute only through NODE_ENV=development yarn db:seed.
+DO $guard$
+BEGIN
+  IF current_setting('compra_facil.seed_environment', true) IS DISTINCT FROM 'development' THEN
+    RAISE EXCEPTION 'Seed refused: use the guarded development runner.';
+  END IF;
+END $guard$;
+
 -- SOMENTE DESENVOLVIMENTO. Seed development-demo-v1: 184 registros fictícios.
 -- Confirme host, porta, banco, usuário e ambiente na conexão; porta 5432 não prova localidade.
 -- Não execute em produção. Leia README.md antes de executar.

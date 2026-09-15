@@ -84,7 +84,7 @@ test('JSONBin pagination and enriched store response remain compatible', async (
     { id: 2, name: 'Arroz Integral', brand: 'B', material_id: 2, images: [] },
     { id: 3, name: 'Feijao', brand: 'C', material_id: 1, images: [] },
   ];
-  Object.assign(globalThis, { $fetch: async (url: string) => ({ record: url.includes('691258eed0ea881f40e06d73') ? products : [
+  Object.assign(globalThis, { $fetch: async (url: string) => ({ record: url.includes('products-test') ? products : [
     { id: 7, id_store: 2, id_product: 1, price: '12.50', quantity: 4 },
     { id: 8, id_store: 3, id_product: 2, price: '8.00', quantity: 1 },
   ] }) });

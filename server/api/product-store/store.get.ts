@@ -1,7 +1,8 @@
+import { apiHandler } from '~/server/utils/api-handler';
 import { validateStoreId } from '../../utils/pagination';
 import { ProductStoreService } from "~/server/services/ProductStoreService";
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
     const query = getQuery(event)
 
     const store_id = typeof query.store_id === 'string' ? Number(query.store_id) : NaN

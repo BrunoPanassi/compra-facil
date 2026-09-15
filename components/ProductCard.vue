@@ -146,7 +146,7 @@ import type { Product } from '@/types/Product';
 import { resizeAndCompressImage, uploadImageHostingReturnUrl } from '~/util/image';
 import { maxQuantRule, priceRule, requiredRule } from '~/util/rule';
 import ProductCombobox from './ProductCombobox.vue';
-import { type ProductStore, type ProductStoreDataTable } from '~/types/ProductStore';
+import type { ProductStore, ProductStoreDataTable } from '~/types/ProductStore';
 
 const productStore = useProductStore();
 const materialStore = useMaterialStore();

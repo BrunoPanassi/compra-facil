@@ -1,11 +1,10 @@
+import { createError } from 'h3';
 import { SqlAdapter } from '@/server/adapters/SqlAdapter';
 import { JSONBinAdapter } from '../adapters/JSONBinAdapter';
 import type { RepositoryAdapter } from '../adapters/RepositoryAdapter';
 import { useRuntimeConfig } from '#imports';
 
-function isSqlEnabled(value: unknown): boolean {
-    return value === true || (typeof value === 'string' && value.toLowerCase() === 'true');
-}
+import { isSqlEnabled } from '../utils/adapter';
 
 export class BaseRepository<T extends { id: number }> {
     protected adapter: RepositoryAdapter<T>;
@@ -29,12 +28,14 @@ export class BaseRepository<T extends { id: number }> {
         await this.adapter.add(data);
     }
 
-    async update(id: number, updated: T): Promise<void> {
-        await this.adapter.update(id, updated);
+    async update(id: number, updated: T): Promise<T> {
+        const result = await this.adapter.update(id, { ...updated, id });
+        if (!result) throw createError({ statusCode: 404 });
+        return result;
     }
 
     async delete(id: number): Promise<void> {
-        await this.adapter.delete(id);
+        if (!await this.adapter.delete(id)) throw createError({ statusCode: 404 });
     }
 
     async getByIds(ids: number[]): Promise<T[]> {

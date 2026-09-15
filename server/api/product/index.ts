@@ -1,9 +1,11 @@
-import { defineEventHandler, readBody } from 'h3';
+import { validId, queryIds } from '~/server/utils/validation';
+import { apiHandler } from '~/server/utils/api-handler';
+import { readBody } from 'h3';
 import { ProductService } from '~/server/services/ProductService';
 
-const service = new ProductService();
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
+  const service = new ProductService();
   const method = event.method;
 
   if (method === 'GET') {
@@ -18,13 +20,13 @@ export default defineEventHandler(async (event) => {
       });
     }
 
-    const ids = (query.ids as number[])
+    const ids = queryIds(query.ids)
     if (ids?.length) {
       return await service.getByIds([...ids])
     }
 
-    const id = Number.parseInt(query.id as string)
-    if (id) {
+    if (query.id !== undefined) {
+      const id = validId(query.id)
       return await service.findById(id)
     }
     return await service.findAll()

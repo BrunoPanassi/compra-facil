@@ -1,9 +1,10 @@
-import { defineEventHandler, readBody } from 'h3';
+import { apiHandler } from '~/server/utils/api-handler';
+import { readBody } from 'h3';
 import { MaterialService } from '~/server/services/MaterialService';
 
-const service = new MaterialService();
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
+  const service = new MaterialService();
   const method = event.method;
 
   if (method === 'GET') {

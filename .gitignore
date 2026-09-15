@@ -49,3 +49,7 @@ test/
 # .pnp.*
 
 # End of https://www.toptal.com/developers/gitignore/api/nuxtjs,yarn,vue
+
+coverage/
+*.dump
+*.bak

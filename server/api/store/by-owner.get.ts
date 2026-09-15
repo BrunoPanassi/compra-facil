@@ -1,16 +1,11 @@
+import { validId } from '~/server/utils/validation';
+import { apiHandler } from '~/server/utils/api-handler';
 import { StoreService } from "~/server/services/StoreService";
 
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const query = getQuery(event);
-  const owner_id = query.owner_id;
-
-  if (typeof owner_id !== 'number' || !owner_id) {
-    return {
-      statusCode: 400,
-      message: 'Parâmetro "owner_id" é obrigatório e deve ser um number.',
-    };
-  }
+  const owner_id = validId(query.owner_id);
 
   const storeService = new StoreService();
   const stores = await storeService.findByOwner(owner_id);

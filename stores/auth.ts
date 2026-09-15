@@ -1,11 +1,11 @@
 import { defineStore } from 'pinia';
-import { type Role } from '~/types/Role';
-import type { User } from '~/types/User';
+import type { Role } from '~/types/Role';
+import type { PublicUser } from '~/types/User';
 import { showErrorMessage } from '~/util/Util';
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    user: null as User | null
+    user: null as PublicUser | null
   }),
   actions: {
     async login(telefone: string, senha: string) {
@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', {
         const defaultMessage = 'Erro ao se autenticar, tente novamente.'
         throw new Error(showErrorMessage(defaultMessage, data?.message))
       }
-      this.user = data.value as any;
+      this.user = data.value;
     },
     async register(nome: string, telefone: string, senha: string, role: Role) {
       const { data, error } = await useFetch('/api/user/register', {
@@ -32,7 +32,7 @@ export const useAuthStore = defineStore('auth', {
         const defaultMessage = 'Falha ao cadastrar'
         showErrorMessage(defaultMessage, data?.message)
       }
-      this.user = data.value as any;
+      this.user = data.value;
     },
     logout() {
       this.user = null;

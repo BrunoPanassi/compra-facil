@@ -1,23 +1,23 @@
-# Validação das consultas
+# Testes e verificações
 
-Execute com as dependências existentes:
+- `yarn typecheck`: Nuxt e vue-tsc locais, sem instalação implícita.
+- `yarn lint`: configuração oficial `@nuxt/eslint`; erros reais bloqueiam, dívida legada permanece como avisos.
+- `yarn test`: 15 testes com `node:test` + tsx. Sem Docker ou rede externa.
+- `yarn test:watch`: mesmos testes em observação.
+- `yarn test:integration`: opt-in por `TEST_DATABASE_URL`, exclusivamente local, com schema previamente aplicado. Sem variável, registra skipped, não aprovação da integração.
 
-```sh
-TSX_TSCONFIG_PATH=tests/tsconfig.json node --import tsx --test --experimental-test-isolation=none tests/queries.test.ts
-```
+## Cobertura
 
-Os seis testes usam o query builder real do Drizzle com transporte PostgreSQL simulado e JSONBin simulado. Não acessam serviços nem modificam dados reais. Verificam parâmetros, whitelist, filtros, limite/offset, ordenação, delegação sem getAll, JOIN único, mapeamento, IDs inválidos, fallback JSON e estrutura do fluxo do componente. Não substituem integração com PostgreSQL nem teste de navegador.
+`queries.test.ts`: SQL parametrizado, propriedades permitidas/inválidas, pesquisa literal, paginação sem getAll, ordenação, COUNT, JOIN por loja, ausência de produtos, JSONBin simulado e consumo de uma resposta enriquecida no frontend.
 
-Mapa de uso: ProductCombobox → stores/product.fetch → GET /api/product → ProductService.getPaginated → ProductRepository.getPaginated. A store product-store.fetch expõe GET /api/product-store → ProductStoreService.getPaginated → ProductStoreRepository.getPaginated; não foi encontrado consumidor visual dessa paginação. São os únicos dois repositories paginados e ambos usavam getAll. Material, MaterialType, Store e User não implementam paginação e foram preservados.
+`security.test.ts`: configuração SQL/JSONBin e padrão, DTO público sem senha/hash/token, erros sem SQL/credenciais/stack, limites de paginação, validação de IDs e payloads, serialização de CEP/telefone/preço/quantidade/imagens, pool e guard do seed.
 
-ProductCard.onStoreSelect → stores/product-store.byStore → GET /api/product-store/store → ProductStoreService.getByStore → ProductStoreRepository.getByStore agora retorna ProductStoreWithProduct[]. O tipo preserva id, id_store, id_product, price, quantity e acrescenta product. A segunda chamada a product.fetch com ids foi removida apenas desse fluxo; getByIds continua disponível para outros usos.
+`integration/postgresql.test.ts`: getAll/getById/getByIds, inserção com ID, update/delete com WHERE preservando outro registro, pesquisa/paginação reais, JOIN, loja sem produtos, FK, índice único e rollback após erro. Todos os registros têm marcador `step4-test-`; a transação é revertida em finally. Não usa TRUNCATE/DROP nem modifica fixtures preexistentes. Sequences podem avançar.
 
-Paginação: contrato { items, total }, padrões page=1/perPage=10/prop=name; entradas inválidas retornam erro 400. COUNT e itens compartilham o filtro, com ORDER BY id, LIMIT e OFFSET. Propriedade desconhecida com search retorna zero correspondências; search vazio não filtra. A propriedade padrão name não existe na associação e continua sem correspondências quando há busca. Whitelists: products(id,name,brand,desc,material_id,images), product-store(id,id_store,id_product,price,quantity). Busca parcial sem trim, sem distinção de caixa, com caracteres especiais literais; números continuam pesquisados como texto e arrays como lista separada por vírgulas. Campos extras não declarados nas entidades JSON não são pesquisáveis.
+`smoke/preview.ts`: execute com `node --import tsx tests/smoke/preview.ts`, depois de iniciar o Nitro em `127.0.0.1:3100`, com `DATABASE_URL` local. Verifica SSR, asset, rotas, login fictício sanitizado, pesquisa/paginação e CRUD. Faz cleanup somente de IDs e marcadores próprios. Com `--unavailable`, espera health/API 503, sem fallback. Não substitui testes interativos de navegador ou um Preview real na Vercel.
 
-JOIN: product_stores.id_product = products.id, WHERE product_stores.id_store parametrizado. Preço/quantidade vêm da associação; nome/marca/descrição/material/imagens vêm do produto. JSONBin compõe o mesmo formato no servidor com uma busca em lote e descarta associações órfãs, como o INNER JOIN. Não há N+1. A store Pinia foi alterada para tipar a resposta enriquecida; o utilitário compartilhado centraliza validação. Services não precisaram mudar.
+## Contratos
 
-Validações nesta execução: testes 6/6; yarn build aprovado; yarn lint indisponível (eslint ausente); nenhum script typecheck, tsc ou vue-tsc instalado; docker compose up -d bloqueado por permissão no socket; yarn db:migrate terminou com erro. Nenhum teste de integração real ou validação visual/Network SQL e JSONBin foi executado. Iniciar o PostgreSQL manualmente e concluir essas verificações antes de considerar todos os critérios de aceite atendidos.
+IDs são números inteiros positivos; CEP e telefone são strings para preservar zeros. `price` é string decimal não negativa com até duas casas (PostgreSQL retorna duas); `quantity` é inteiro não negativo; `images` é array de strings. Paginação padrão: page=1/perPage=10, máximo 100 itens, busca até 200 caracteres. Propriedade de busca desconhecida retorna zero resultados quando search está preenchido, preservando o contrato anterior; busca vazia não aplica filtro. Não há fallback automático para JSONBin.
 
-Os índices product_stores_id_store_idx e product_stores_id_product_idx e o índice único composto já existem no schema e na migration inicial. Não foram criadas migrations. Busca por substring/conversão textual pode demandar índices especializados conforme métricas reais; nenhum índice adicional é proposto sem medição. COUNT e itens são consultas separadas e podem observar alterações concorrentes. Diferenças de locale entre lower do PostgreSQL e JavaScript devem ser verificadas com os dados reais.
-
-Não houve importação, seed, alteração de autenticação, operação Git remota, commit ou início da terceira etapa.
+Veja [implantação](../docs/deployment-postgresql.md) e [relatório da etapa 4](../docs/step4-validation.md) para resultados e limitações.

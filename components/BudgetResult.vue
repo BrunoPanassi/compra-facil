@@ -14,7 +14,7 @@
             <hr>
             <div class="mt-6">
                 <b>Produtos</b>
-                <div v-for="prod in budgetStore.getProdStore()">
+                <div v-for="prod in budgetStore.getProdStore()" :key="prod.id_product">
                     <p>{{ prod.name }}</p>
                     <p>{{ prod.price }}</p>
                 </div>
@@ -49,9 +49,9 @@ async function downloadBudgetPDF() {
   const opt = {
     margin:       0.5,
     filename:     `orçamento-${Date.now()}.pdf`,
-    image:        { type: 'jpeg', quality: 0.98 },
+    image:        { type: 'jpeg' as const, quality: 0.98 },
     html2canvas:  { scale: 2 },
-    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' as const }
   };
   try {
     generatePdfLoading.value = true

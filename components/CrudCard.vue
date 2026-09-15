@@ -50,7 +50,7 @@ import { ref, computed } from 'vue';
 
 const props = defineProps({
   title: String,
-  headers: { type: Array<Object>, default: []},
+  headers: { type: Array<object>, default: []},
   items: Array,
   modelValue: Boolean,
   loadingDataTable: { type: Boolean, default: false}

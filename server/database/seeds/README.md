@@ -91,20 +91,17 @@ Toda a carga fica entre `BEGIN` e `COMMIT`. Os blocos de validação usam exceç
 
 **Sequences não são transacionais:** um ensaio com `ROLLBACK` desfaz os registros, mas pode consumir IDs. Isso é esperado e não exige restaurar sequences; lacunas não causam colisões. Os testes locais consumiram IDs somente dos destinos. Nenhum novo usuário foi inserido, modificado ou recriado.
 
-## Execução pelo DBeaver
+## Execução protegida (etapa 4)
 
-1. Inicie o PostgreSQL local do projeto. Existe o script `npm run db:up`; se Docker exigir privilégio administrativo, inicie o container manualmente, sem executar sudo automaticamente. O teste desta entrega usou o container já ativo.
-2. Abra o DBeaver e selecione a conexão de desenvolvimento. Confira **host, porta, nome do banco, usuário e ambiente** nas propriedades da conexão. Não confunda localhost de um túnel com servidor local; 5432 isoladamente não comprova nada. Não copie credenciais para documentação ou logs.
-3. Abra um SQL Editor vinculado à conexão e abra/cole `server/database/seeds/development-demo.sql`. Confira novamente a conexão ativa do editor. Use uma sessão sem transação anterior pendente.
-4. Desative autocommit e commits intermediários/por instrução. Nas opções de processamento SQL, configure interrupção em erro, preferencialmente rollback em erro. Não escolha ignorar erros, execução paralela em abas separadas ou execução de instruções em conexões distintas.
-5. Selecione somente as pré-consultas no início, até `FIM DAS PRÉ-CONSULTAS`. Execute essa seleção. Confira a identificação da sessão, exatamente dois IDs de usuários e contagens zero nas cinco tabelas. Não execute inserts se o destino não for o local esperado.
-6. Para **ensaio sem persistência**, substitua o `COMMIT;` final por `ROLLBACK;` em uma cópia do editor. Execute todo esse conteúdo como script. Não envolva o arquivo original em outro `BEGIN`: o `COMMIT` interno confirmaria a carga.
-7. Para **carga com revisão antes da confirmação**, selecione desde `BEGIN;` até antes da seção 11, excluindo `COMMIT;`, e execute a seleção como script na mesma conexão. Confira os resultados e só então execute `COMMIT;` como instrução separada, se desejar persistir. Para desistir, execute `ROLLBACK;` nessa conexão.
-8. Para **carga já revisada**, o arquivo completo original pode ser executado como script, ciente de que seu `COMMIT` final persiste os dados automaticamente se não houver erro. O botão de autocommit desligado não bloqueia um `COMMIT` explícito.
-9. Use o menu **SQL Editor → Execute SQL Script** (ou a opção equivalente no menu Execute do editor, conforme idioma/versão). Executar uma instrução roda somente a instrução selecionada/sob o cursor; executar script processa sequencialmente todas as instruções selecionadas ou do arquivo, inclusive blocos `DO`. Atalhos variam por sistema. Consulte a [documentação oficial de execução SQL do DBeaver](https://dbeaver.com/docs/dbeaver/SQL-Execution/).
-10. As validações esperam 8/24/48/8/96 registros, quatro lojas por cidade, quatro por owner, 12 produtos por loja e zero linhas nas consultas de anomalias. Se houver erro ou divergência antes do commit, interrompa e execute `ROLLBACK`; investigue a causa antes de recomeçar.
+1. Inicie apenas o PostgreSQL local do projeto (`yarn db:up`).
+2. Confira a conexão local configurada em `DATABASE_URL`, sem imprimir credenciais.
+3. Confira as pré-condições acima: exatamente dois usuários existentes e tabelas de destino vazias.
+4. Execute `NODE_ENV=development yarn db:seed`.
+5. Confira as contagens e validações abaixo. Não execute novamente se o seed já estiver presente.
 
-O Codex executou apenas cópias terminadas em ROLLBACK; **não executou COMMIT**. A aplicação só exibirá esses dados depois da carga deliberada e quando estiver usando o adapter SQL já configurável no projeto. Nenhum arquivo de ambiente foi alterado.
+O runner recusa ambiente ausente, produção, qualquer execução Vercel e host remoto. O SQL exige um marcador de sessão exclusivo do runner. Não execute o arquivo completo diretamente no DBeaver; utilize o editor somente para as consultas de conferência. Não remova o guard para contornar uma recusa. Nenhum seed é executado automaticamente.
+
+A etapa 4 não reexecutou o seed e não alterou seus registros existentes. Veja [implantação PostgreSQL](../../../../docs/deployment-postgresql.md) para os ambientes de produção.
 
 ## Conferência após execução
 

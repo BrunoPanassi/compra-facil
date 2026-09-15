@@ -28,8 +28,8 @@ export async function uploadJson(entity: string) {
     const filePath = join(process.cwd(), 'server', 'data', `${entity}.json`);
     const data = JSON.parse(readFileSync(filePath, 'utf8'));
 
-    const images: Array<String> = data[0]['images']
-    let imagesUrl: Array<String> = []
+    const images: Array<string> = data[0]['images']
+    let imagesUrl: Array<string> = []
 
     for(let image of images) {
       const form = new FormData();
@@ -51,9 +51,9 @@ export async function uploadJson(entity: string) {
     },
     body: JSON.stringify(data)
     });
-    console.log(`✅ ${entity} atualizado:`, res);
- } catch (e) {
-    console.log(`❌ Erro ao tentar salvar ${entity} :`, e);
+    console.log(`JSONBin migration response: ${res.status}`);
+ } catch {
+    console.error('JSONBin migration failed.');
  }
 
   
@@ -65,4 +65,4 @@ async function main() {
   }
 }
 
-main().catch(console.error);
+main().catch(() => { console.error('JSONBin migration failed.'); process.exitCode = 1; });

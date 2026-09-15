@@ -60,13 +60,13 @@ export async function processImageAndReturnUrl(imageObject: File | string) {
   }
   if (typeof imageObject === 'string') {
     if (isValidURL(imageObject)) {
-      return imageObject
+      throw new Error('Imagem inválida.')
     }
     if (isValidBase64(imageObject)) {
       return await uploadImageHostingReturnUrl(imageObject)
     }
   }
-  return imageObject
+  throw new Error('Imagem inválida.')
 }
 
 export function isValidURL(url: string) {
@@ -97,12 +97,8 @@ export function isValidBase64(str: string) {
 }
 
 export async function uploadImageHostingReturnUrl(imageBase64: string) {
-  const imageHostingUrl = 'https://api.imgbb.com/1/upload?key=83881527799e244d9d01f87dd33f90e9'
-  const form = new FormData();
-  form.append('image', imageBase64.split(',').pop() || ''); // ou convert to base64 as API requires
-  const resp = await $fetch(imageHostingUrl, {
-    method: 'POST',
-    body: form
+  const response = await $fetch<{ url: string }>('/api/image', {
+    method: 'POST', body: { image: imageBase64 },
   });
-  return (resp as any).data.url as string
+  return response.url;
 }

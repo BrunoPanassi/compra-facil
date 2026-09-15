@@ -1,4 +1,4 @@
-import { type Role } from "./Role";
+import type { Role } from "./Role";
 
 export interface User {
   id: number;
@@ -13,3 +13,5 @@ export interface UserLocation {
   longitude: number
   accuracy: number
 }
+
+export type PublicUser = Pick<User, 'id' | 'nome' | 'telefone' | 'role'>;

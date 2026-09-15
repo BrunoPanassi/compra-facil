@@ -9,11 +9,11 @@
             {{ title }}
           </v-card-title>
           <v-card-text class="text-body-2">
-            <p>{{ message }} <br>
+            <div>{{ message }} <br>
                 <div v-if="item">
                     "<strong>{{ item }}</strong>"?
                 </div>
-            </p>
+            </div>
           </v-card-text>
           <v-card-actions>
             <v-btn color="grey" @click="onConfirm(false)">Não</v-btn>

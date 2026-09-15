@@ -20,7 +20,7 @@ export class ProductStoreRepository extends BaseRepository<ProductStore> impleme
     const data = await this.getAll()
     const filtered = search ?
       data.filter(d => searchableProperties['product-store'].includes(prop) &&
-        (d[prop]?.toString().toLowerCase() || '').includes(search?.toLowerCase()))
+        (Object.entries(d).find(([key]) => key === prop)?.[1]?.toString().toLowerCase() || '').includes(search?.toLowerCase()))
       : data
 
     const offset = (page - 1) * perPage

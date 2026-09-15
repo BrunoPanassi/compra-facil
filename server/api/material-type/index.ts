@@ -1,7 +1,7 @@
-import { defineEventHandler } from 'h3';
+import { apiHandler } from '~/server/utils/api-handler';
 import { MaterialTypeService } from '~/server/services/MaterialTypeService';
 
-export default defineEventHandler(async () => {
+export default apiHandler(async () => {
   const service = new MaterialTypeService();
   return service.findAll();
 });

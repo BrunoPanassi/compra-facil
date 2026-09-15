@@ -17,7 +17,7 @@ const plainStoreValue = {
   lon: 0,
   owner_id: 0,
   description: '',
-  cellphone: 0,
+  cellphone: '',
   email: ''
 }
 

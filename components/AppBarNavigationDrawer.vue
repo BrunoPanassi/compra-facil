@@ -46,7 +46,7 @@
               <template v-slot:prepend>
                 <v-icon :icon="item.icon"></v-icon>
               </template>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
           </v-list>
         </v-menu>
@@ -69,7 +69,7 @@
           <template v-slot:prepend>
             <v-icon :icon="item.icon"></v-icon>
           </template>
-          <v-list-item-title v-text="item.title"></v-list-item-title>
+          <v-list-item-title>{{ item.title }}</v-list-item-title>
         </v-list-item>
       </v-list>
     </v-navigation-drawer>

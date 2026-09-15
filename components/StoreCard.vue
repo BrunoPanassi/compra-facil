@@ -37,13 +37,13 @@
                 </v-expansion-panel-text>
               </v-expansion-panel>
             </v-expansion-panels>
-            <v-text-field v-model.number="form.zip" :rules="[requiredRule]" v-maska="'########'" label="CEP" class="mb-3"/>
+            <v-text-field v-model="form.zip" :rules="[requiredRule]" v-maska="'########'" label="CEP" class="mb-3"/>
             <v-text-field v-model="form.street" :rules="[requiredRule]" label="Rua" class="mb-2" />
             <v-text-field v-model.number="form.nr" :rules="[requiredRule]" label="Número" class="mb-2" />
             <v-text-field v-model="form.neighbr" :rules="[requiredRule]" label="Bairro" class="mb-2" />
             <v-text-field v-model="form.city" :rules="[requiredRule]" label="Cidade" class="mb-2" />
             <v-text-field v-model="form.state" :rules="[requiredRule]" label="Estado" class="mb-2" />
-            <v-text-field v-model.number="form.cellphone"  :rules="[requiredRule]" label="Telefone" class="mb-2" />
+            <v-text-field v-model="form.cellphone"  :rules="[requiredRule]" label="Telefone" class="mb-2" />
             <v-text-field v-model="form.email" label="Email" class="mb-2" />
           </template>
         </FormDialog>
@@ -114,7 +114,7 @@ function onDestinationSelect(addressCoordinates: AddressCoordinates) {
   form.value.lon = coordinates.lon
   if (address) {
     const postCode = address.postcode.includes("-") ? address.postcode.replace("-", "") : address.postcode
-    form.value.zip = Number(postCode)
+    form.value.zip = postCode
   }
 }
 
@@ -134,12 +134,12 @@ const form = ref<Store>({
   neighbr: '',
   city: '',
   state: '',
-  zip: 0,
+  zip: '',
   lat: 0,
   lon: 0,
   owner_id: 0,
   description: '',
-  cellphone: 0,
+  cellphone: '',
   email: ''
 });
 
@@ -203,7 +203,7 @@ async function fetchAddressByZip() {
         form.value.neighbr = data.value?.bairro ?? '';
         form.value.city = data.value?.localidade ?? '';
         form.value.state = data.value?.uf ?? '';
-        form.value.zip = Number(cepOnlyDigits)
+        form.value.zip = cepOnlyDigits
       } catch {
         alert('Falha inesperada ao buscar endereço');
       }

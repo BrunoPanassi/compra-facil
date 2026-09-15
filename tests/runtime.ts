@@ -1,1 +1,1 @@
-export function useRuntimeConfig() { return { useSql: false, public: { jsonBinBaseUrl: 'https://example.test' }, jsonBinApiKey: '' }; }
+export function useRuntimeConfig() { return { useSql: false, public: { jsonBinBaseUrl: 'https://example.test' }, jsonBinApiKey: '', jsonBinProductsId: 'products-test', jsonBinProductStoresId: 'associations-test' }; }

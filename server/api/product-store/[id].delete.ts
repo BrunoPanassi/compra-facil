@@ -1,9 +1,10 @@
-import { defineEventHandler } from 'h3';
+import { validId } from '~/server/utils/validation';
+import { apiHandler } from '~/server/utils/api-handler';
 import { ProductStoreService } from '~/server/services/ProductStoreService';
 
-const service = new ProductStoreService();
 
-export default defineEventHandler(async (event) => {
-  const id = Number(event.context.params?.id);
+export default apiHandler(async (event) => {
+  const service = new ProductStoreService();
+  const id = validId(event.context.params?.id);
   return await service.delete(id);
 });

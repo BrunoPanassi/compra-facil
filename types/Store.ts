@@ -6,13 +6,13 @@ export interface Store {
   neighbr: string;
   city: string;
   state: string;
-  zip: number|null;
+  zip: string|null;
   lat: number,
   lon: number,
   owner_id: number;
   description: string;
-  cellphone: number|null;
-  cellphone_second?: number;
+  cellphone: string|null;
+  cellphone_second?: string;
   email: string;
   facebook?: string;
   instagram?: string;

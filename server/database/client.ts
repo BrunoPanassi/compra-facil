@@ -1,34 +1,24 @@
 import { drizzle, type NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { Pool } from 'pg';
-import { useRuntimeConfig } from '#imports';
+import { attachDatabasePool } from '@vercel/functions';
+import { poolOptions } from './pool-options';
 import * as schema from './schema';
 
 type Database = NodePgDatabase<typeof schema>;
-
 const globalDatabase = globalThis as typeof globalThis & {
   compraFacilPool?: Pool;
   compraFacilDatabase?: Database;
 };
 
 export function getDatabase(): Database {
-  if (globalDatabase.compraFacilDatabase) {
-    return globalDatabase.compraFacilDatabase;
+  if (globalDatabase.compraFacilDatabase) return globalDatabase.compraFacilDatabase;
+  const pool = globalDatabase.compraFacilPool ?? new Pool(poolOptions(process.env));
+  if (!globalDatabase.compraFacilPool) {
+    // Do not log driver errors: they can contain connection details or SQL.
+    pool.on('error', () => { console.error('An idle database connection failed.'); });
+    if (process.env.VERCEL === '1') attachDatabasePool(pool);
+    globalDatabase.compraFacilPool = pool;
   }
-
-  const config = useRuntimeConfig();
-  const databaseUrl = config.databaseUrl as string | undefined;
-
-  if (!databaseUrl?.trim()) {
-    throw new Error(
-      'PostgreSQL connection was requested, but NUXT_DATABASE_URL or DATABASE_URL is not configured.',
-    );
-  }
-
-  const pool = globalDatabase.compraFacilPool ?? new Pool({ connectionString: databaseUrl });
-  const database = drizzle(pool, { schema });
-
-  globalDatabase.compraFacilPool = pool;
-  globalDatabase.compraFacilDatabase = database;
-
-  return database;
+  globalDatabase.compraFacilDatabase = drizzle(pool, { schema });
+  return globalDatabase.compraFacilDatabase;
 }

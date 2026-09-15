@@ -4,11 +4,17 @@ import { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
   devtools: { enabled: true },
   css: ['@/assets/css/main.css'],
-  modules: ['vuetify-nuxt-module', '@pinia/nuxt', '@nuxt/fonts', '@nuxtjs/leaflet'],
+  // Keep Vue's nested devtools dependencies together when Nitro traces the Node bundle.
+  nitro: {
+    externals: { inline: ['pinia', 'vue-router', '@vue/devtools-api', '@vue/devtools-kit', '@vue/devtools-shared'] },
+  },
+  modules: ['@nuxt/eslint', 'vuetify-nuxt-module', '@pinia/nuxt', '@nuxt/fonts', '@nuxtjs/leaflet'],
   build: {
     transpile: ['vuetify', 'lodash-es']
   },
   vite: {
+    ssr: { noExternal: ['pinia', 'vue-router'] },
+    build: { commonjsOptions: { esmExternals: ['vue'] } },
     vue: {
       template: {
         transformAssetUrls,
@@ -17,7 +23,7 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     useSql: process.env.NUXT_USE_SQL ?? process.env.PRIVATE_USE_SQL ?? "false",
-    databaseUrl: process.env.NUXT_DATABASE_URL || process.env.DATABASE_URL,
+    databaseUrl: '',
     openStreetMapUrl: process.env.PRIVATE_OPENSTREETMAP_URL,
     photonMapUrl: process.env.PRIVATE_PHOTON_URL,
     googleMapsUrl: process.env.PRIVATE_GOOGLEMAPS_URL,

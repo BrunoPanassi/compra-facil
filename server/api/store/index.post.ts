@@ -1,6 +1,7 @@
+import { apiHandler } from '~/server/utils/api-handler';
 import { StoreService } from "~/server/services/StoreService";
 
-export default defineEventHandler(async (event) => {
+export default apiHandler(async (event) => {
   const body = await readBody(event);
   const service = new StoreService();
   return await service.create(body);
