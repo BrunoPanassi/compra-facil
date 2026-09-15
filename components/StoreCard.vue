@@ -32,7 +32,7 @@
                     :lat="form.lat"
                     :lon="form.lon"
                     :display-name="getDisplayName"
-                    @select="onDestinationSelect" 
+                    @select="onDestinationSelect"
                   />
                 </v-expansion-panel-text>
               </v-expansion-panel>
@@ -81,7 +81,7 @@
       <v-data-table 
         :mobile="$vuetify.display.mobile" 
         :headers="headers" 
-        :items="storeStore.items"  
+        :items="storeStore.items"
         item-value="id" 
         class="elevation-1"
       >

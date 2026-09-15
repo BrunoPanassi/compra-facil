@@ -179,10 +179,20 @@ Regras: `vue/require-default-prop` (11), `@typescript-eslint/no-explicit-any` (1
 - `tests/runtime.ts`
 - `tests/security.test.ts`
 - `tests/smoke/preview.ts`
+- `types/Address.ts`
 - `types/Material.ts`
 - `types/OrderAmount.ts`
 - `types/ProductStore.ts`
 - `types/Store.ts`
 - `types/User.ts`
 - `util/image.ts`
+- `util/rule.ts`
 - `yarn.lock`
+
+## Resultado do envio
+
+Commit principal local: `266f38f` (`chore: prepare PostgreSQL persistence for production`). O push HTTPS foi tentado somente para `sql-adapter` e falhou porque não há credencial Git local configurada (`could not read Username`, prompts desabilitados). O conector GitHub consegue consultar o repositório, mas não foi usado para criar PR de uma branch remota desatualizada. Nenhum token foi solicitado.
+
+PR preparado em `docs/pull-request-postgresql.md`; não criado. Após configurar autenticação Git local, execute os comandos acima. Não existem checks remotos deste commit, pois ele não foi enviado. Todos os resultados de checks neste relatório são locais.
+
+A revisão acumulada contra master encontrou sete espaços no fim de linhas oriundos das etapas anteriores; foram removidos em uma limpeza final, sem alteração de comportamento.

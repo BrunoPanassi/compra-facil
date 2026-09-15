@@ -1,5 +1,5 @@
 export interface Address {
-  id: number, 
+  id: number,
   name: string,
   lat: number,
   lon: number,
@@ -12,7 +12,7 @@ export interface Address {
 
 export interface Coordinates {
   lat: number,
-  lon: number, 
+  lon: number,
   display_name: string
 }
 

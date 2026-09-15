@@ -8,7 +8,7 @@ export const onlyNumberRule = (value:string) => {
 }
 export const allowOnlyNumber = (event:KeyboardEvent) => {
     const allowedKeys = ['Backspace', 'Delete', 'ArrowLeft', 'ArrowRight', 'Tab']
-  
+
   // Allow system/navigation keys
   if (allowedKeys.includes(event.key)) {
     return

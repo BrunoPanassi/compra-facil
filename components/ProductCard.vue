@@ -39,8 +39,8 @@
           @on-clear="onProductClear"
         />
         <span class="text-caption">Caso contrário, cadastre o nome dele:</span>
-        <v-text-field 
-          v-model="searchText" 
+        <v-text-field
+          v-model="searchText"
           label="Nome"
           :disabled="!isStoreSelected || !!selectedProduct"
         >
