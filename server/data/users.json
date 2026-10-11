@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "nome": "Bruno - 123",
+    "nome": "Bruno - Teste@123",
     "telefone": "18997648833",
     "senha": "$2b$10$b1Pw/XvK4BD7q7ZO2lTcIeLzcVICdqJTCahezG.SHFdDB24o1G8ZG",
     "role": "CLIENT"
@@ -11,6 +11,13 @@
     "nome": "Valdemar - V@ldem4r",
     "telefone": "90293019209",
     "senha": "$2b$10$7U4BfZ.zbWD9UCcf0MyMaul5Kd8KGkrXuseAZqNxdDoT2qBYuITwq",
+    "role": "STORE_OWNER"
+  },
+  {
+    "id": 3,
+    "nome": "Mariana - Teste@123",
+    "telefone": "18996201928",
+    "senha": "$2b$10$AKp6rSoWQK8RRgW/TFLeTeC60RgykodvKy8ULrs/93Krlg/XvQEjG",
     "role": "STORE_OWNER"
   }
 ]

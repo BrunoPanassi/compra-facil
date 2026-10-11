@@ -9,7 +9,6 @@
         :disabled="false"
         :multiple="true"
         @on-select="onProductSelect"
-        @on-clear="onProductClear"
       />
     </v-card>
 
@@ -138,10 +137,6 @@ function onProductSelect(products: Product[]) {
   if (products && products.length) {
     selectedProducts.value = products
   }
-}
-
-function onProductClear() {
-  selectedProducts.value = undefined
 }
 
 const storeStore = useStoreStore()
