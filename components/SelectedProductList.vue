@@ -108,8 +108,7 @@ const emit = defineEmits<{
 /**
  * Estado interno com quantidade
  */
-const selectedProducts = ref<SelectedProduct[]>([])
-onMounted(() => selectedProducts.value = budgetProductsStore.getProducts())
+const selectedProducts = ref<SelectedProduct[]>([...budgetProductsStore.getProducts()])
 /**
  * Inicializa ou sincroniza os produtos recebidos
  */

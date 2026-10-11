@@ -1,3 +1,4 @@
+import type { BestStoreSearchParams, BestStoreResult } from '~/types/BestStore';
 import type { Store } from "~/types/Store";
 import { showErrorMessage } from '~/util/Util';
 
@@ -23,10 +24,34 @@ const plainStoreValue = {
 
 export const useStoreStore = defineStore(entity, {
     state: () => ({
+        bestStores: [] as BestStoreResult[],
+        bestStoresLoading: false,
+        bestStoresError: '',
+        bestStoresRequest: 0,
         items: [] as Array<Store>,
         storeSelected: plainStoreValue as Store
     }),
     actions: {
+        async fetchBestStores(params: BestStoreSearchParams) {
+            const request = ++this.bestStoresRequest;
+            this.bestStores = [];
+            this.bestStoresError = '';
+            this.bestStoresLoading = true;
+            try {
+                const results = await $fetch<BestStoreResult[]>('/api/store/best', { method: 'POST', body: params });
+                if (request !== this.bestStoresRequest) return undefined;
+                this.bestStores = results;
+                return results;
+            } catch {
+                if (request === this.bestStoresRequest) {
+                    this.bestStores = [];
+                    this.bestStoresError = 'Falha ao buscar as melhores lojas. Tente novamente.';
+                }
+                return undefined;
+            } finally {
+                if (request === this.bestStoresRequest) this.bestStoresLoading = false;
+            }
+        },
         async fetch() {
             const res = await $fetch<Store[]>(`/api/${entity}`);
             this.items = res;

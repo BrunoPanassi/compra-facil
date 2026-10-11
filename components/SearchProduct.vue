@@ -46,6 +46,10 @@
             Distancia
           </v-btn>
         </v-btn-toggle>
+        <p class="mt-6">Máximo raio de distância: 
+          <span class="font-weight-bold">{{ maxDistanceKm }} km</span>
+        </p>
+        <v-slider v-model="maxDistanceKm" min="20" max="200" step="1" class="align-center" hide-details></v-slider>
       </v-card-text>
       <v-card-item class="px-6">
         <v-btn
@@ -53,12 +57,15 @@
           color="#2d6a4f"
           rounded
           block
+          :loading="storeStore.bestStoresLoading"
           @click="calculateBestStores"
           text="Buscar"
         >
         </v-btn>
       </v-card-item>
     </v-card>
+
+    <v-alert v-if="storeStore.bestStoresError" type="error" class="mt-4">{{ storeStore.bestStoresError }}</v-alert>
 
     <v-bottom-sheet v-model="showResults">
       <!-- Resultado -->
@@ -76,10 +83,10 @@
             <p><strong>Distância:</strong> {{ store.distance.toFixed(2) }} km</p>
             <p><strong>Produtos encontrados:</strong></p>
             <ul class="ml-4">
-              <li v-for="p in store.foundProducts" :key="p.id_store">
+              <li v-for="p in store.foundProducts" :key="p.id_product">
                 {{ p.name }}
                 <br>
-                <strong>R$ </strong>{{ p.price }}
+                <strong>R$ </strong>{{ p.price }} × {{ p.requestedQuantity }} = {{ p.subtotal }}
               </li>
             </ul>
             <p v-if="store.missingProducts.length"><strong>Produtos não encontrados:</strong></p>
@@ -106,9 +113,9 @@
 import AddressPicker from "@/components/AddressPicker.vue";
 import type { Product } from '~/types/Product';
 import { ref } from "vue"
-import { haversineDistance } from '~/util/geoUtils';
+import { storeToRefs } from "pinia";
 import SelectedProductList from '@/components/SelectedProductList.vue'
-import type { ProductStore, ProdutStoreProductDetail, BestStoreResult } from "~/types/ProductStore";
+import type { ProdutStoreProductDetail } from "~/types/ProductStore";
 import { useBudgetStore } from "~/stores/budget";
 import type { Store } from "~/types/Store";
 import { AddressCoordinates } from "~/types/Address";
@@ -119,7 +126,9 @@ const budgetStore = useBudgetStore()
 
 const destinationCoords = ref<{ lat: number; lon: number; display_name: string } | null>(null);
 
-const priorize = ref<string>("price");
+const maxDistanceKm = ref<number>(20);
+
+const priorize = ref<"price" | "distance">("price");
 const showResults = ref<boolean>(false);
 
 function toggleShowResults() {
@@ -134,87 +143,36 @@ function onDestinationSelect(addressCoordinates: AddressCoordinates) {
 
 const selectedProducts = ref<Product[]>();
 function onProductSelect(products: Product[]) {
-  if (products && products.length) {
-    selectedProducts.value = products
-  }
+  selectedProducts.value = products
 }
 
 const storeStore = useStoreStore()
-const productStoreStore = useProductStoreStore()
-
-const bestStores = ref<BestStoreResult[]>([])
+const budgetProductsStore = useBudgetProductsStore()
+const { bestStores } = storeToRefs(storeStore)
 
 async function calculateBestStores() {
-  const stores = await storeStore.fetch()
-  const productsStore = await productStoreStore.fetch({ prop: '' })
-
-  if (!selectedProducts.value || selectedProducts.value.length === 0) {
-    alert("Selecione pelo menos um produto")
-    return
+  showResults.value = false;
+  const products = budgetProductsStore.getProducts();
+  if (!products.length) {
+    storeStore.bestStores = [];
+    alert("Selecione pelo menos um produto");
+    return;
   }
-
   if (!destinationCoords.value) {
-    alert("Selecione um destino")
-    return
+    alert("Selecione um destino");
+    return;
   }
-
-  const results: BestStoreResult[] = []
-
-  for (const store of stores) {
-    let totalPrice = 0
-    const foundProducts: ProdutStoreProductDetail[] = []
-    const missingProducts: Product[] = []
-
-    for (const product of selectedProducts.value) {
-      const ps = productsStore.items.find(
-        (ps: ProductStore) => ps.id_store === store.id && ps.id_product === product.id
-      )
-
-      if (ps) {
-        totalPrice += Number.parseFloat(ps.price)
-        foundProducts.push({...product, ...ps})
-      } else {
-        missingProducts.push(product)
-      }
-    }
-
-    // Distância
-    const distance = haversineDistance(
-      destinationCoords.value.lat,
-      destinationCoords.value.lon,
-      store.lat,
-      store.lon
-    )
-
-    results.push({ store, totalPrice, distance, foundProducts, missingProducts, score: 0 })
+  const results = await storeStore.fetchBestStores({
+    products: products.map(product => ({ productId: product.id, quantity: product.quantity })),
+    latitude: destinationCoords.value.lat,
+    longitude: destinationCoords.value.lon,
+    priority: priorize.value,
+    maxDistanceKm: maxDistanceKm.value
+  });
+  if (results) {
+    showResults.value = results.length > 0;
+    if (!results.length) alert("Nenhuma loja possui estoque suficiente para os produtos selecionados");
   }
-
-  // 🔹 Verifica cobertura de produtos (quantos cada loja possui)
-  const maxCoverage = Math.max(...results.map(r => r.foundProducts.length))
-
-  // 🔹 Fallback: considera apenas lojas com maior cobertura
-  const candidateStores = results.filter(r => r.foundProducts.length === maxCoverage && r.foundProducts.length > 0)
-
-  if (candidateStores.length === 0) {
-    bestStores.value = []
-    return
-  }
-
-  // Normalizar preço e distância para calcular score
-  const maxPrice = Math.max(...candidateStores.map(r => r.totalPrice))
-  const maxDist = Math.max(...candidateStores.map(r => r.distance))
-
-  const priceRate = priorize.value == "price" ? 0.6 : 0.4
-  const distRate = priorize.value == "distance" ? 0.6 : 0.4
-
-  candidateStores.forEach(r => {
-    const priceNorm = maxPrice > 0 ? r.totalPrice / maxPrice : 0
-    const distNorm = maxDist > 0 ? r.distance / maxDist : 0
-    r.score = priceNorm * priceRate + distNorm * distRate
-  })
-
-  bestStores.value = candidateStores.sort((a, b) => a.score - b.score).slice(0, 3)
-  toggleShowResults();
 }
 
 function goToBudgetPage(prodStore: Array<ProdutStoreProductDetail>, store: Store) {

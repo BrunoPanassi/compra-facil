@@ -16,7 +16,7 @@
                 <b>Produtos</b>
                 <div v-for="prod in budgetStore.getProdStore()" :key="prod.id_product">
                     <p>{{ prod.name }}</p>
-                    <p>{{ prod.price }}</p>
+                    <p>R$ {{ prod.price }} × {{ prod.requestedQuantity ?? 1 }} = R$ {{ prod.subtotal ?? prod.price }}</p>
                 </div>
             </div>
         </v-card-text>

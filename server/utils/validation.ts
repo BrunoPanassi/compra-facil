@@ -1,7 +1,7 @@
 import { createError } from 'h3';
 
-export function invalidInput(): never {
-  throw createError({ statusCode: 400, message: 'Dados inválidos.' });
+export function invalidInput(message = 'Dados inválidos.'): never {
+  throw createError({ statusCode: 400, message: message });
 }
 export function validId(value: unknown): number {
   if (typeof value !== 'number' && typeof value !== 'string') return invalidInput();

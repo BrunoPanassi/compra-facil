@@ -1,5 +1,5 @@
 import type { Product } from "./Product";
-import type { Store } from "./Store";
+export type { BestStoreResult } from "./BestStore";
 
 export interface ProductStore {
   id: number;
@@ -23,6 +23,9 @@ export interface ProdutStoreProductDetail {
   id_product: number;
   price: string;
   quantity: number;
+  requestedQuantity?: number;
+  availableQuantity?: number;
+  subtotal?: string;
   name: string;
   brand: string
   desc?: string;
@@ -30,14 +33,6 @@ export interface ProdutStoreProductDetail {
   images: string[];
 }
 
-export interface BestStoreResult {
-  store: Store;
-  totalPrice: number;
-  distance: number;
-  foundProducts: ProdutStoreProductDetail[];
-  missingProducts: Product[];
-  score: number;
-}
 export interface ProductStoreWithProduct extends ProductStore {
   product: Product;
 }
